@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Agenten ohne Token-Kosten | Hermetikmarketing</title>
+    <meta name="description" content="Bauen Sie 24/7 KI-Agenten mit Hermes + OmniRoute – ohne laufende API-Kosten. Praxis-Anleitung für KMU.">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg-card: #161b22;
+            --bg-hover: #1c2330;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --green: #3fb950;
+            --orange: #d29922;
+            --red: #f85149;
+            --purple: #bc8cff;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+        nav .logo span { color: var(--text-muted); font-weight: 400; }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: var(--accent); }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(88, 166, 255, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(188, 140, 255, 0.06) 0%, transparent 50%);
+            animation: drift 20s ease-in-out infinite;
+        }
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 20px); }
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 100px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            max-width: 800px;
+            margin-bottom: 1rem;
+            position: relative;
+            line-height: 1.15;
+        }
+        .hero h1 .highlight {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #0d1117;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(88, 166, 255, 0.3);
+        }
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        section .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== PROBLEM ===== */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        .problem-card:hover {
+            border-color: var(--red);
+            transform: translateY(-3px);
+        }
+        .problem-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .problem-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .problem-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* ===== ARCHITECTURE ===== */
+        .arch-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            overflow-x: auto;
+        }
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .arch-box {
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            text-align: center;
+            min-width: 200px;
+            border: 2px solid;
+        }
+        .arch-box.manager {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent);
+        }
+        .arch-box.worker {
+            background: rgba(63, 185, 80, 0.08);
+            border-color: var(--green);
+        }
+        .arch-box.omniroute {
+            background: rgba(188, 140, 255, 0.08);
+            border-color: var(--purple);
+        }
+        .arch-box h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .arch-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+        }
+        .arch-workers {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .arch-worker-mini {
+            background: rgba(63, 185, 80, 0.05);
+            border: 1px dashed var(--green);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--green);
+        }
+
+        /* ===== STEPS ===== */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            padding-bottom: 2.5rem;
+            position: relative;
+        }
+        .step::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 44px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .step:last-child::before { display: none; }
+        .step-number {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #0d1117;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            z-index: 1;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-content h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .step-content p {
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .code-block {
+            background: #010409;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .cmd { color: var(--green); }
+        .code-block .flag { color: var(--orange); }
+        .code-block .string { color: var(--purple); }
+        .code-block .output { color: var(--accent); }
+
+        /* ===== USE CASES ===== */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .usecase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        .usecase-card:hover {
+            border-color: var(--green);
+            transform: translateY(-3px);
+        }
+        .usecase-card .emoji { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .usecase-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+        .usecase-card p { color: var(--text-muted); font-size: 0.9rem; }
+        .usecase-card .tag {
+            display: inline-block;
+            background: rgba(63, 185, 80, 0.1);
+            color: var(--green);
+            border-radius: 100px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+        }
+        .cta-section h2 { margin-bottom: 0.5rem; }
+        .cta-section p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            nav ul { display: none; }
+            section { padding: 3rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="logo">Hermetikmarketing <span>× Hermes Agent</span></div>
+    <ul>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#architektur">Architektur</a></li>
+        <li><a href="#anleitung">Anleitung</a></li>
+        <li><a href="#use-cases">Use Cases</a></li>
+        <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-badge">🎯 Leadmagnet · KI-Agenten-Infrastruktur</div>
+    <h1>KI-Agenten, die <span class="highlight">24/7 laufen</span> – ohne laufende Token-Kosten</h1>
+    <p>Bauen Sie automatisierte KI-Agenten mit Hermes + OmniRoute. Beobachten Sie Mitbewerber, generieren Sie Content-Ideen, recherchieren Sie Leads – automatisch, jeden Tag, für praktisch null Euro.</p>
+    <div class="hero-cta">
+        <a href="#anleitung" class="btn btn-primary">Zur Anleitung →</a>
+        <a href="#kontakt" class="btn btn-secondary">Beratung buchen</a>
+    </div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+    <h2>Das Problem mit KI-Agenten</h2>
+    <p class="subtitle">Jeder spricht von KI-Agenten. Aber kaum jemand lässt sie wirklich 24/7 laufen.</p>
+    <div class="problem-grid">
+        <div class="problem-card">
+            <div class="icon">💸</div>
+            <h3>Token-Kosten explodieren</h3>
+            <p>Jeder API-Aufruf kostet Geld. Ein Agent, der stündlich recherchiert, produziert schnell hunderte Euro pro Monat – bei begrenzter Qualität der Gratis-Tiere.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">🔒</div>
+            <h3>Datenschutz bei Free-Tiern</h3>
+            <p>Kunden- und Unternehmensdaten an kostenlose LLM-Gateways zu schicken, ist riskant. Namen, KPIs und Strategien dürfen nicht nach draußen gelangen.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">🧩</div>
+            <h3>Komplexität ohne Struktur</h3>
+            <p>KI-Agenten ohne Architektur verheddern sich: Halluzinationen, Endlosschleifen, unbrauchbare Ausgaben. Ohne Manager/Worker-Pattern herrscht Chaos.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architektur">
+    <h2>Die Lösung: Manager/Worker-Architektur</h2>
+    <p class="subtitle">Ein bezahlter Manager sanitisiert Briefings. Kostenlose Worker erledigen die Arbeit.</p>
+    <div class="arch-container">
+        <div class="arch-diagram">
+            <div class="arch-box manager">
+                <h4>🧠 Manager (lokal, bezahlt)</h4>
+                <p>Liest Kunden-Briefing → anonymisiert → startet Worker → prüft Ergebnisse</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box omniroute">
+                <h4>🔗 OmniRoute (kostenloser Gateway)</h4>
+                <p>localhost:20128 · 115+ kostenlose Modelle · kein API-Key nötig</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-workers">
+                <div class="arch-worker-mini">🔍 Mitbewerber-Scout</div>
+                <div class="arch-worker-mini">✍️ Content-Creator</div>
+                <div class="arch-worker-mini">🚦 Reality-Checker</div>
+                <div class="arch-worker-mini">📈 USP-Stratege</div>
+                <div class="arch-worker-mini">🎯 Lead-Recherche</div>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box worker">
+                <h4>📂 Output-Ordner (Obsidian/Notion)</h4>
+                <p>Ergebnisse als Markdown → Sync zu Notion-Kanban → Telegram-Push-Benachrichtigung</p>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div style="background: rgba(210, 153, 34, 0.08); border: 1px solid rgba(210, 153, 34, 0.3); border-radius: 12px; padding: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--orange);">🔑 Das Datenschutz-Prinzip</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Der Manager entfernt vor der Weitergabe an Worker alle Firmennamen, Personennamen, konkrete Zahlen und internen Systembezeichnungen.
+            Die Worker erhalten nur ein <strong>anonymisiertes Problem-Profil</strong> (Branche, Größenklasse, Schmerzpunkt) – nützlich genug für gute Ergebnisse,
+            sicher genug für echte Daten. Die Worker werden explizit angewiesen: <em>"Eingabe ist anonymisiert – keine echten Namen verwenden, nichts erfinden."</em>
+        </p>
+    </div>
+</section>
+
+<!-- STEPS -->
+<section id="anleitung">
+    <h2>Schritt-für-Schritt-Anleitung</h2>
+    <p class="subtitle">In 5 Schritten zur eigenen KI-Agenten-Pipeline. Voraussetzung: Node.js ≥ 22.</p>
+
+    <div class="steps">
+        <!-- Step 1 -->
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>OmniRoute installieren</h3>
+                <p>OmniRoute ist ein kostenloser LLM-Gateway – kein API-Key, keine Anmeldung. Er leitet Anfragen an kostenlose Modelle weiter.</p>
+                <div class="code-block">
+<span class="comment"># Node.js ≥ 22 benötigt (node --version prüfen)</span>
+<span class="cmd">npm</span> install -g omniroute
+<span class="cmd">omniroute</span> --version    <span class="comment"># z.B. 3.8.49</span>
+<span class="cmd">omniroute</span>                <span class="comment"># startet Server auf http://localhost:20128</span>
+
+<span class="comment"># Modelle anzeigen (115+ kostenlose Modelle):</span>
+<span class="cmd">curl</span> -s http://localhost:20128/v1/models | head -c 400</div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Hermes installieren</h3>
+                <p>Hermes Agent ist das Framework, das die Agenten steuert – Tools, Memory, Cron-Jobs, Messaging.</p>
+                <div class="code-block">
+<span class="comment"># Hermes installieren (einmalig)</span>
+<span class="cmd">curl</span> -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+
+<span class="comment"># Setup-Wizard starten</span>
+<span class="cmd">hermes</span> setup
+
+<span class="comment"># Testen</span>
+<span class="cmd">hermes</span> chat -q <span class="string">"Was ist die Hauptstadt von Frankreich?"</span></div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>OmniRoute-Profil erstellen</h3>
+                <p>Ein separates Hermes-Profil zeigt auf OmniRoute. So bleiben bezahlte und kostenlose Agenten getrennt.</p>
+                <div class="code-block">
+<span class="comment"># Profil erstellen</span>
+<span class="cmd">hermes</span> profile create omniroute-workers
+
+<span class="comment"># Profil auf OmniRoute zeigen</span>
+<span class="cmd">hermes</span> -p omniroute-workers config set model.provider custom
+<span class="cmd">hermes</span> -p omniroute-workers config set model.base_url http://localhost:20128/v1
+<span class="cmd">hermes</span> -p omniroute-workers config set model.default oc/deepseek-v4-flash-free
+<span class="cmd">hermes</span> -p omniroute-workers config set model.api_key dummy
+
+<span class="comment"># Test</span>
+<span class="cmd">hermes</span> -p omniroute-workers chat -q <span class="string">"Antworte nur mit: OK"</span></div>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--orange);">
+                    ⚠️ Wichtig: Statt <code>model: "auto"</code> immer ein konkretes Modell setzen (z.B. <code>oc/deepseek-v4-flash-free</code>).
+                    "auto" führt häufig zu HTTP 503 (überlastete Gratis-Pools).
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Cron-Agenten einrichten</h3>
+                <p>Jeder Agent wird als Cron-Job angelegt – er feuert automatisch zur eingestellten Zeit. Der Prompt muss vollständig selbsterklärend sein.</p>
+                <div class="code-block">
+<span class="comment"># Mitbewerber-Beobachtung jeden Werktag um 07:00 Uhr</span>
+<span class="cmd">hermes</span> -p omniroute-workers cron create <span class="string">"0 7 * * 1-6"</span> \
+  <span class="string">"Du bist der Mitbewerber-Scout-Agent.
+   KONTEXT: KMU im Maschinenbau/Sondermaschinenbau, DACH-Region.
+   AUFGABE: Recherche 3 aktuelle Trends von Mitbewerbern.
+   Schreibe Markdown nach ~/agents/output/mitbewerber-$(date +%F).md.
+   Antworte mit max. 3 Zeilen."</span> \
+  --name <span class="string">"Mitbewerber-Scout"</span> --deliver local
+
+<span class="comment"># Gateway aktivieren (Windows: Startup-Eintrag)</span>
+<span class="cmd">hermes</span> -p omniroute-workers gateway install
+<span class="cmd">hermes</span> -p omniroute-workers gateway start
+<span class="cmd">hermes</span> -p omniroute-workers gateway status   <span class="comment"># "Ticker heartbeat: 5s ago"</span></div>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h3>Manager-Pipeline bauen (Datenschutz)</h3>
+                <p>Der Manager ist Ihr lokaler, bezahlter Hermes (Default-Profil). Er sanitisiert Briefings und prüft Worker-Ergebnisse.</p>
+                <div class="code-block">
+<span class="comment"># Manager sanitisiert Briefing (Python-Skript, lokaler Prozess)</span>
+<span class="comment"># 1. Kunden-Briefing lesen</span>
+<span class="comment"># 2. Firmennamen, KPIs, Personen entfernen</span>
+<span class="comment"># 3. Anonymisiertes Briefing nach ~/agents/briefings/ schreiben</span>
+<span class="comment"># 4. Worker-Cron feuert, liest Briefing, schreibt Output</span>
+<span class="comment"># 5. Manager prüft Output → Sync zu Notion → Telegram-Push</span>
+
+<span class="comment"># Tokenfreie Telegram-Benachrichtigung (Watchdog-Pattern):</span>
+<span class="comment"># no_agent Cron-Job mit --script fragt Notion-DB ab</span>
+<span class="comment"># Wenn neue Karten im Status "Entwurf" → print summary → Telegram</span>
+<span class="comment"># Wenn nichts neues → leerer stdout → silent (keine Nachricht)</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- USE CASES -->
+<section id="use-cases">
+    <h2>Use Cases für KMU</h2>
+    <p class="subtitle">Was können die Agenten konkret leisten? Hier echte Anwendungsfälle.</p>
+    <div class="usecase-grid">
+        <div class="usecase-card">
+            <div class="emoji">🔍</div>
+            <h3>Mitbewerber-Beobachtung</h3>
+            <p>Jeden Morgen um 07:00 Uhr: 3 aktuelle Trends, Preisänderungen oder Produkte von Mitbewerbern im DACH-Raum – automatisch als Markdown-Dokument.</p>
+            <span class="tag">Täglich · automatisch</span>
+        </div>
+        <div class="usecase-card">
+            <div class="emoji">✍️</div>
+            <h3>Content-Ideen generieren</h3>
+            <p>Der Agent analysiert Branchen-Trends und generiert LinkedIn-Post-Ideen, Blog-Themen und Social-Media-Hooks – basierend auf anonymisiertem Unternehmensprofil.</p>
+            <span class="tag">2x pro Woche</span>
+        </div>
+        <div class="usecase-card">
+            <div class="emoji">🚦</div>
+            <h3>Reality-Checker</h3>
+            <p>Prüft Behauptungen, Statistiken und Trends auf Plausibilität. Markiert fragwürdige Aussagen mit Empfehlung zur manuellen Nachprüfung.</p>
+            <span class="tag">Auf Anforderung</span>
+        </div>
+        <div class="usecase-card">
+            <div class="emoji">📈</div>
+            <h3>USP-Strategie-Refinement</h3>
+            <p>Vergleicht anonymisierte Unternehmensstärken mit Marktbedürfnissen und schlägt geschärfte Positionierungen vor – jede Woche frisch.</p>
+            <span class="tag">Wöchentlich</span>
+        </div>
+        <div class="usecase-card">
+            <div class="emoji">🎯</div>
+            <h3>Lead-Recherche</h3>
+            <p>Identifiziert Unternehmen, die zu einem anonymisierten Ideal-Kundenprofil passen. Keine Namen, sondern Kriterien-Listen für manuelle Qualifizierung.</p>
+            <span class="tag">3x pro Woche</span>
+        </div>
+        <div class="usecase-card">
+            <div class="emoji">📺</div>
+            <h3>YouTube-Monitoring</h3>
+            <p>Durchsucht YouTube nach Branchen-Videos, neue Kanäle und Tutorial-Trends. Liefert kuratierte Listen mit Relevanz-Score.</p>
+            <span class="tag">Täglich</span>
+        </div>
+    </div>
+</section>
+
+<!-- KOSTEN -->
+<section>
+    <h2>Was kostet das wirklich?</h2>
+    <p class="subtitle">Die ehrliche Aufstellung.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <div class="problem-card" style="border-color: var(--green);">
+            <div class="icon">✅</div>
+            <h3>OmniRoute</h3>
+            <p style="color: var(--green); font-size: 1.5rem; font-weight: 700;">0 € / Monat</p>
+            <p>Open-Source, npm-Paket, kein API-Key, keine Anmeldung. Kostenlos.</p>
+        </div>
+        <div class="problem-card" style="border-color: var(--accent);">
+            <div class="icon">✅</div>
+            <h3>Hermes Agent</h3>
+            <p style="color: var(--accent); font-size: 1.5rem; font-weight: 700;">0 € / Monat</p>
+            <p>Open-Source (MIT-Lizenz). Läuft lokal. Optional: Nous Subscription für verwaltete Web-Tools.</p>
+        </div>
+        <div class="problem-card" style="border-color: var(--orange);">
+            <div class="icon">💰</div>
+            <h3>Manager-Modell</h3>
+            <p style="color: var(--orange); font-size: 1.5rem; font-weight: 700;">~5-15 € / Monat</p>
+            <p>Der Manager nutzt ein bezahltes Modell (z.B. Claude/DeepSeek), aber nur für kurze Sanitization- und Prüfungs-Aufgaben. Token-Verbrauch minimal.</p>
+        </div>
+        <div class="problem-card" style="border-color: var(--purple);">
+            <div class="icon">🖥️</div>
+            <h3>Infrastruktur</h3>
+            <p style="color: var(--purple); font-size: 1.5rem; font-weight: 700;">0 € oder ~5 € / Monat</p>
+            <p>Läuft auf eigenem PC. Optional: kleiner Hetzner-Server (2 GB) für 24/7-Betrieb.</p>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 2rem;">
+        <p style="font-size: 1.3rem; color: var(--green); font-weight: 700;">
+            Gesamt: ca. 5-20 € / Monat für eine vollständige 24/7-Agenten-Pipeline
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+            Zum Vergleich: Ein einzelner Agent auf GPT-4/Turbo-API kann leicht 100-500 € / Monat kosten.
+        </p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section id="kontakt">
+    <div class="cta-section">
+        <h2>Bereit für Ihre eigene KI-Agenten-Pipeline?</h2>
+        <p>Wir helfen Ihnen, die Infrastruktur aufzusetzen – maßgeschneidert für Ihr Unternehmen.</p>
+        <div class="cta-buttons">
+            <a href="mailto:timo@hermetikmarketing.de?subject=KI-Agenten-Pipeline%20Anfrage" class="btn btn-primary">
+                💬 Beratung anfragen
+            </a>
+            <a href="https://github.com/NousResearch/hermes-agent" class="btn btn-secondary">
+                Hermes Agent auf GitHub
+            </a>
+        </div>
+        <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            Hermetikmarketing · KI-Agentur für Sondermaschinenbau & KMU<br>
+            <a href="mailto:timo@hermetikmarketing.de">timo@hermetikmarketing.de</a>
+        </p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>
+        Erstellt von <a href="mailto:timo@hermetikmarketing.de">Hermetikmarketing</a> ·
+        Powered by <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> (Nous Research) +
+        <a href="https://www.npmjs.com/package/omniroute">OmniRoute</a><br>
+        MIT-lizenziert · 2026
+    </p>
+</footer>
+
+</body>
+</html>
