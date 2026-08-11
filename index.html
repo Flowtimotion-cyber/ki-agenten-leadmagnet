@@ -52,6 +52,14 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        nav .logo img {
+            height: 32px;
+            width: auto;
+            border-radius: 6px;
         }
         nav .logo span { color: var(--text-muted); font-weight: 400; }
         nav ul {
@@ -409,7 +417,7 @@
 
 <!-- NAV -->
 <nav>
-    <div class="logo">Hermetikmarketing <span>× Hermes Agent</span></div>
+    <div class="logo"><img src="hm-logo.png" alt="HM Logo">Hermetikmarketing <span>× Hermes Agent</span></div>
     <ul>
         <li><a href="#problem">Problem</a></li>
         <li><a href="#architektur">Architektur</a></li>
@@ -421,6 +429,7 @@
 
 <!-- HERO -->
 <div class="hero">
+    <img src="hm-logo.png" alt="Hermetikmarketing HM Logo" style="height: 80px; width: auto; border-radius: 12px; margin-bottom: 1.5rem; position: relative; box-shadow: 0 4px 30px rgba(88, 166, 255, 0.2);">
     <div class="hero-badge">🎯 Leadmagnet · KI-Agenten-Infrastruktur</div>
     <h1>KI-Agenten, die <span class="highlight">24/7 laufen</span> – ohne laufende Token-Kosten</h1>
     <p>Bauen Sie automatisierte KI-Agenten mit Hermes + OmniRoute. Beobachten Sie Mitbewerber, generieren Sie Content-Ideen, recherchieren Sie Leads – automatisch, jeden Tag, für praktisch null Euro.</p>
@@ -693,6 +702,7 @@
 <!-- CTA -->
 <section id="kontakt">
     <div class="cta-section">
+        <img src="hm-logo.png" alt="Hermetikmarketing HM Logo" style="height: 60px; width: auto; border-radius: 8px; margin-bottom: 1rem;">
         <h2>Bereit für Ihre eigene KI-Agenten-Pipeline?</h2>
         <p>Wir helfen Ihnen, die Infrastruktur aufzusetzen – maßgeschneidert für Ihr Unternehmen.</p>
         <div class="cta-buttons">
@@ -712,6 +722,7 @@
 
 <!-- FOOTER -->
 <footer>
+    <img src="hm-logo.png" alt="Hermetikmarketing HM Logo" style="height: 40px; width: auto; border-radius: 6px; margin-bottom: 0.75rem;">
     <p>
         Erstellt von <a href="mailto:timo@hermetikmarketing.de">Hermetikmarketing</a> ·
         Powered by <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> (Nous Research) +
