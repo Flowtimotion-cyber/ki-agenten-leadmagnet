@@ -133,6 +133,7 @@
         <li><a href="#modelle">Modelle</a></li>
         <li><a href="#composio">Tools</a></li>
         <li><a href="#n8n">Workflows</a></li>
+        <li><a href="#wissen">Wissensspeicher</a></li>
         <li><a href="#schritte">Setup</a></li>
         <li><a href="#kontakt">Kontakt</a></li>
     </ul>
@@ -460,6 +461,64 @@
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
             Zum Vergleich: Ein einzelner Agent auf GPT-4-API kostet schnell 100-500 € / Monat. SaaS-Stacks oft 500+ €.
         </p>
+    </div>
+</section>
+
+<!-- KARPATHY WISSEN -->
+<section id="wissen">
+    <h2>Dein Wissen wird zum Kapital</h2>
+    <p class="subtitle">Nicht jedes Mal von vorne anfangen. Einmal abstrahieren, dauerhaft verknüpfen.</p>
+    <div class="callout" style="margin-bottom: 2rem;">
+        <h3>🧠 Die Karpathy-Methode: LLM Wiki statt RAG</h3>
+        <p>Statt bei jeder Frage die KI das ganze Wissen neu durchsuchen zu lassen (klassisches RAG), kompiliert der Agent Wissen <strong>einmalig</strong> zu verknüpften Wiki-Seiten. Jede neue Quelle wird abstrahiert, mit bestehendem Wissen verknüpft und dauerhaft gespeichert. Beim nächsten Zugriff ist alles schon da — verknüpft, geprüft, widerspruchsfrei.</p>
+    </div>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">📁</div>
+            <h3>RAW — Die Quelle der Wahrheit</h3>
+            <p>Originaldokumente: PDFs, Transkripte, Web-Clips. Der Agent liest hier, schreibt aber niemals hinein. Unveränderlich. Bei Fehlern lässt sich daran korrigieren.</p>
+            <span class="tag">Nur lesen</span>
+        </div>
+        <div class="card">
+            <div class="icon">📝</div>
+            <h3>Wiki — Vom Agenten gepflegt</h3>
+            <p>Konzept-Seiten, Entitäten, Vergleiche. Der Agent abstrahiert, verknüpft, aktualisiert. Jede Seite hat Quellen, Tags und Querverweise. Eine wachsende Wissensbasis.</p>
+            <span class="tag">Agent schreibt</span>
+        </div>
+        <div class="card">
+            <div class="icon">☁️</div>
+            <h3>cloud.md — Die Disziplin</h3>
+            <p>Die Regeln, die steuern, was der Agent tut, wenn neue Quellen landen. Ohne sie wäre er ein Chatbot. Mit ihr wird er zum Kurator, der das Wiki pflegt.</p>
+            <span class="tag">Steuerung</span>
+        </div>
+    </div>
+    <div class="arch-container" style="margin-top: 2rem;">
+        <div class="arch-diagram">
+            <div class="arch-box teal">
+                <h4>📥 Neue Quelle in RAW/</h4>
+                <p>PDF, Transkript, Web-Clip</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box teal">
+                <h4>🧠 Agent liest cloud.md + SCHEMA.md</h4>
+                <p>Regeln und Format laden</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box teal">
+                <h4>✍️ Abstrahieren & Verknüpfen</h4>
+                <p>Neue Wiki-Seiten oder bestehende ergänzen</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-row">
+                <div class="arch-mini">📄 index.md</div>
+                <div class="arch-mini">📋 log.md</div>
+                <div class="arch-mini">🔗 [[Wikilinks]]</div>
+            </div>
+        </div>
+    </div>
+    <div class="callout">
+        <h3>🔑 Warum nicht RAG?</h3>
+        <p>RAG durchsucht bei jeder Anfrage eine Vektordatenbank — die KI fängt jedes Mal bei null an. Das Karpathy-Wiki kompiliert Wissen <strong>einmalig</strong>: Querverweise sind schon gesetzt, Widersprüche schon gekennzeichnet, Synthesen schon gemacht. Der Token-Verbrauch sinkt, die Qualität steigt. Und weil alles Markdown ist, gehört dir das Wissen — nicht einer Cloud.</p>
     </div>
 </section>
 
