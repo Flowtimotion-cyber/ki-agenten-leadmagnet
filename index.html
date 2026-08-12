@@ -130,6 +130,8 @@
         <li><a href="#problem">Problem</a></li>
         <li><a href="#angebot">Angebot</a></li>
         <li><a href="#architektur">Architektur</a></li>
+        <li><a href="#modelle">Modelle</a></li>
+        <li><a href="#composio">Tools</a></li>
         <li><a href="#schritte">Setup</a></li>
         <li><a href="#kontakt">Kontakt</a></li>
     </ul>
@@ -193,6 +195,12 @@
             <p>Automatisierungs-Engine. Verbindet Hermes mit deinem Postfach, CRM, Kalender. Workflows, die 24/7 laufen, ohne dass du einen Tab offen hast.</p>
             <span class="tag">Self-hosted · Fair-code</span>
         </div>
+        <div class="card">
+            <div class="icon">🔌</div>
+            <h3>Composio</h3>
+            <p>500+ App-Integrationen über einen MCP-Server. Google Workspace, Notion, Slack, Stripe, Meta Ads – deine Agenten sprechen mit jedem Tool.</p>
+            <span class="tag">500+ Apps · 1 MCP-Server</span>
+        </div>
     </div>
     <div class="callout">
         <h3>🔑 Auf deinem eigenen Server</h3>
@@ -218,6 +226,11 @@
             </div>
             <div class="arch-arrow">↓</div>
             <div class="arch-box teal">
+                <h4>🔗 Composio · 500+ Apps verbunden</h4>
+                <p>Google Workspace · Notion · Slack · GitHub · Stripe · Meta Ads · TikTok · Figma · Browser · und mehr</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box teal">
                 <h4>🔗 OmniRoute (kostenloser Gateway)</h4>
                 <p>115+ KI-Modelle · kein API-Key · localhost:20128</p>
             </div>
@@ -238,7 +251,82 @@
     </div>
     <div class="callout">
         <h3>🔑 Das Datenschutz-Prinzip</h3>
-        <p>Der Manager-Agent sanitisiert Briefings, bevor kostenlose Worker loslegen: Firmennamen, KPIs und Personen werden entfernt. Die Worker erhalten nur anonymisierte Problem-Profile – nützlich genug für gute Ergebnisse, sicher genug für echte Daten.</p>
+        <p>Der Manager entfernt vor der Weitergabe an Worker alle Firmennamen, KPIs und Personen. Die Worker erhalten nur anonymisierte Problem-Profile – nützlich genug für gute Ergebnisse, sicher genug für echte Daten.</p>
+    </div>
+</section>
+
+<!-- MODELLE -->
+<section id="modelle">
+    <h2>Das richtige Modell für jede Aufgabe</h2>
+    <p class="subtitle">Nicht jede Aufgabe braucht denselben Agenten. Drei Ebenen, klug kombiniert.</p>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">🆓</div>
+            <h3>Free-Tier · OmniRoute</h3>
+            <p>115+ kostenlose Modelle für Massen-Aufgaben: Mitbewerber-Beobachtung, Content-Ideen, Lead-Recherche. Läuft 24/7 ohne Token-Kosten.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">DeepSeek, GPT-5.4-mini, u.v.m.</p>
+            <span class="tag">0 € · anonymisiert</span>
+        </div>
+        <div class="card" style="border-color: var(--teal);">
+            <div class="icon">💎</div>
+            <h3>Premium-Tier · Bezahlte Agenten</h3>
+            <p>Wenn Qualität zählt: Claude, GPT-4 oder DeepSeek-V3 für Strategie, USP-Refinement, komplexe Analysen. Token-Kosten bleiben minimal – nur für Aufgaben, die es wert sind.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">Claude Sonnet, GPT-4o, DeepSeek-V3</p>
+            <span class="tag">~5-15 €/Monat · gezielt</span>
+        </div>
+        <div class="card" style="border-color: var(--teal-light);">
+            <div class="icon">🏠</div>
+            <h3>Private-Tier · Ollama / Relationflow</h3>
+            <p>Wenn KI <strong>nicht</strong> mit deinen Daten lernen soll: Ollama läuft lokal auf deinem Server, kein Daten verlässt je dein System. Das Corporate LLM Relationflow für sensible Kunden- und Unternehmensdaten.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">Llama 3, Mistral, Qwen – lokal gehostet</p>
+            <span class="tag">100% privat · dein Server</span>
+        </div>
+    </div>
+    <div class="callout">
+        <h3>🧭 Wie wird entschieden?</h3>
+        <p>Der Manager-Agent klassifiziert jede Aufgabe: <strong>Öffentlich/recherche-basiert</strong> → Free-Tier (OmniRoute). <strong>Strategisch/kreativ</strong> → Premium-Tier (bezahlte Tokens). <strong>Sensibel/intern</strong> → Private-Tier (Ollama/Relationflow, Daten verlassen niemals den Server). So bekommt jede Aufgabe genau die Intelligenz, die sie braucht – zum besten Preis und höchster Sicherheit.</p>
+    </div>
+</section>
+
+<!-- COMPOSIO -->
+<section id="composio">
+    <h2>500+ Apps, verbunden durch Composio</h2>
+    <p class="subtitle">Deine Agenten sprechen mit jedem Tool – ohne eine einzige Zeile Integrations-Code.</p>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">📧</div>
+            <h3>Google Workspace</h3>
+            <p>Gmail, Calendar, Drive, Sheets – Agenten lesen und schreiben E-Mails, Termine, Dokumente.</p>
+        </div>
+        <div class="card">
+            <div class="icon">📋</div>
+            <h3>Notion & Slack</h3>
+            <p>Kanban-Boards automatisch befüllen, Team-Benachrichtigungen auslösen, Aufgaben erstellen.</p>
+        </div>
+        <div class="card">
+            <div class="icon">💳</div>
+            <h3>Stripe & CRM</h3>
+            <p>Zahlungen überwachen, Deals tracken, Revenue-Report generieren – alles automatisch.</p>
+        </div>
+        <div class="card">
+            <div class="icon">📱</div>
+            <h3>Meta Ads & TikTok</h3>
+            <p>Werbeanzeigen-Performance abrufen, Leads automatisch qualifizieren und ins CRM einspielen.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🐙</div>
+            <h3>GitHub & Vercel</h3>
+            <p>Repos verwalten, Deployments triggern, Issues automatisch erstellen und zuordnen.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🌐</div>
+            <h3>Browser & Web Search</h3>
+            <p>URLs scrapen, Web-Recherche durchführen, Wettbewerbsseiten automatisch analysieren.</p>
+        </div>
+    </div>
+    <div class="callout">
+        <h3>⚡ Wie Composio funktioniert</h3>
+        <p>Composio ist die Verbindungsschicht zwischen Hermes Agent und deinen Tools. Statt für jedes Tool eine eigene API-Integration zu bauen, verbindet Composio 500+ Apps über einen einzigen MCP-Server. Authentifizierung, Trigger und Aktionen – alles verwaltet. Deine Agenten sagen "Schreibe eine E-Mail an Kunde X" und Composio erledigt den Rest.</p>
     </div>
 </section>
 
@@ -366,7 +454,8 @@
         Powered by <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> (Nous Research) +
         <a href="https://www.npmjs.com/package/omniroute">OmniRoute</a> +
         <a href="https://n8n.io">N8n</a> +
-        <a href="https://obsidian.md">Obsidian</a><br>
+        <a href="https://obsidian.md">Obsidian</a> +
+        <a href="https://composio.dev">Composio</a><br>
         MIT-lizenziert · 2026
     </p>
 </footer>
