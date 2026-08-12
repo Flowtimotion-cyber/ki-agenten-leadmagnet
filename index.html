@@ -470,13 +470,41 @@
     </div>
 </section>
 
-<!-- KARPATHY WISSEN -->
+<!-- WISSEN -->
 <section id="wissen">
     <h2>Dein Wissen wird zum Kapital</h2>
-    <p class="subtitle">Nicht jedes Mal von vorne anfangen. Einmal abstrahieren, dauerhaft verknüpfen.</p>
+    <p class="subtitle">Zwei Wege, dein Firmenwissen für die KI nutzbar zu machen. Wir testen beide und wählen den passenden für deine Struktur.</p>
+
+    <!-- WEG 1: RAG -->
     <div class="callout" style="margin-bottom: 2rem;">
-        <h3>🧠 Die Karpathy-Methode: LLM Wiki statt RAG</h3>
-        <p>Statt bei jeder Frage die KI das ganze Wissen neu durchsuchen zu lassen (klassisches RAG), kompiliert der Agent Wissen <strong>einmalig</strong> zu verknüpften Wiki-Seiten. Jede neue Quelle wird abstrahiert, mit bestehendem Wissen verknüpft und dauerhaft gespeichert. Beim nächsten Zugriff ist alles schon da — verknüpft, geprüft, widerspruchsfrei.</p>
+        <h3>🔍 Weg 1: Corporate LLM mit RAG</h3>
+        <p>Der klassische Ansatz: Deine Dokumente liegen in einer Vektordatenbank. Bei jeder Frage sucht die KI nach passenden Passagen, generiert eine Antwort und vergisst den Zusammenhang wieder. Ideal für <strong>große, unstrukturierte Dokumentenberge</strong> — Handbücher, Schaltpläne, Verträge. Die KI findet Nadeln im Heuhaufen, ohne dass jemand vorab alles lesen und strukturieren muss.</p>
+    </div>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">📚</div>
+            <h3>Vektordatenbank</h3>
+            <p>Alle Dokumente werden als Embeddings gespeichert. Die KI sucht semantisch — nicht nach Stichworten, sondern nach Bedeutung.</p>
+            <span class="tag">Dokumentenbasis</span>
+        </div>
+        <div class="card">
+            <div class="icon">🔎</div>
+            <h3>Just-in-Time Retrieval</h3>
+            <p>Bei jeder Frage: passende Passagen finden → in den Kontext laden → Antwort generieren. Kein Vorab-Aufbau nötig. Funktioniert mit 10.000+ Seiten.</p>
+            <span class="tag">Skalierbar</span>
+        </div>
+        <div class="card">
+            <div class="icon">🔒</div>
+            <h3>Corporate LLM</h3>
+            <p>Self-hosted oder über Corporate API. Deine Daten verlassen nicht den Server. Zugriffskontrolle pro Abteilung. Auditierbar.</p>
+            <span class="tag">Datenschutz</span>
+        </div>
+    </div>
+
+    <!-- WEG 2: KARPATHY -->
+    <div class="callout" style="margin-top: 3rem; margin-bottom: 2rem;">
+        <h3>🧠 Weg 2: LLM Wiki nach Karpathy (in Obsidian)</h3>
+        <p>Der alternative Ansatz nach Andrej Karpathy: Statt bei jeder Frage neu zu suchen, kompiliert der Agent Wissen <strong>einmalig</strong> zu verknüpften Wiki-Seiten. Jede Quelle wird abstrahiert, mit bestehendem Wissen verknüpft und dauerhaft gespeichert. Beim nächsten Zugriff ist alles schon da — verknüpft, geprüft, widerspruchsfrei. Ideal für <strukturiertes, wachsendes Wissen</strong>, das wiederkehrende Fragen beantwortet.</p>
     </div>
     <div class="card-grid">
         <div class="card">
@@ -488,13 +516,13 @@
         <div class="card">
             <div class="icon">📝</div>
             <h3>Wiki — Vom Agenten gepflegt</h3>
-            <p>Konzept-Seiten, Entitäten, Vergleiche. Der Agent abstrahiert, verknüpft, aktualisiert. Jede Seite hat Quellen, Tags und Querverweise. Eine wachsende Wissensbasis.</p>
+            <p>Konzept-Seiten, Entitäten, Vergleiche. Der Agent abstrahiert, verknüpft, aktualisiert. Jede Seite hat Quellen, Tags und Querverweise. Eine wachsende Wissensbasis in Obsidian — deinem zweiten Gehirn.</p>
             <span class="tag">Agent schreibt</span>
         </div>
         <div class="card">
             <div class="icon">☁️</div>
             <h3>cloud.md — Die Disziplin</h3>
-            <p>Die Regeln, die steuern, was der Agent tut, wenn neue Quellen landen. Ohne sie wäre er ein Chatbot. Mit ihr wird er zum Kurator, der das Wiki pflegt.</p>
+            <p>Die Regeln, die steuern, was der Agent tut, wenn neue Quellen landen. Ohne sie wäre er ein Chatbot. Mit ihr wird er zum Kurator, der das Wiki pflegt. Standardisiert durch Googles OKF-Format.</p>
             <span class="tag">Steuerung</span>
         </div>
     </div>
@@ -522,9 +550,11 @@
             </div>
         </div>
     </div>
+
+    <!-- VERGLEICH -->
     <div class="callout">
-        <h3>🔑 Warum nicht RAG?</h3>
-        <p>RAG durchsucht bei jeder Anfrage eine Vektordatenbank — die KI fängt jedes Mal bei null an. Das Karpathy-Wiki kompiliert Wissen <strong>einmalig</strong>: Querverweise sind schon gesetzt, Widersprüche schon gekennzeichnet, Synthesen schon gemacht. Der Token-Verbrauch sinkt, die Qualität steigt. Und weil alles Markdown ist, gehört dir das Wissen — nicht einer Cloud.</p>
+        <h3>⚖️ Welcher Weg für dich?</h3>
+        <p><strong>RAG</strong> ist richtig, wenn du einen großen, unstrukturierten Dokumentenbestand hast und die KI schnell Antworten finden soll — ohne dass jemand vorab alles strukturiert. <strong>Das LLM Wiki</strong> ist richtig, wenn dein Wissen wächst, wiederkehrende Fragen hat und die KI Zusammenhänge verstehen soll, nicht nur Passagen finden. Wir testen beide Ansätze, bewerten sie an deiner Firmenstruktur und empfehlen den passenden — oder eine Kombination.</p>
     </div>
 </section>
 
