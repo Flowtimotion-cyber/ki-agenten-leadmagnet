@@ -473,12 +473,65 @@
 <!-- WISSEN -->
 <section id="wissen">
     <h2>Dein Wissen wird zum Kapital</h2>
-    <p class="subtitle">Zwei Wege, dein Firmenwissen für die KI nutzbar zu machen. Wir testen beide und wählen den passenden für deine Struktur.</p>
+    <p class="subtitle">Zwei Wege, dein Firmenwissen für die KI nutzbar zu machen — vom persönlichen Agenten bis zur Firmenweiten Lösung.</p>
 
-    <!-- WEG 1: RAG -->
+    <!-- WEG 1: KARPATHY (PA-AGENT, OBSIDIAN) -->
     <div class="callout" style="margin-bottom: 2rem;">
-        <h3>🔍 Weg 1: Corporate LLM mit RAG</h3>
-        <p>Der klassische Ansatz: Deine Dokumente liegen in einer Vektordatenbank. Bei jeder Frage sucht die KI nach passenden Passagen, generiert eine Antwort und vergisst den Zusammenhang wieder. Ideal für <strong>große, unstrukturierte Dokumentenberge</strong> — Handbücher, Schaltpläne, Verträge. Die KI findet Nadeln im Heuhaufen, ohne dass jemand vorab alles lesen und strukturieren muss.</p>
+        <h3>🧠 Weg 1: LLM Wiki nach Karpathy — für deinen persönlichen KI-Agenten</h3>
+        <p>Der Ansatz für deinen <strong>Hermes PA-Agenten</strong>: Statt bei jeder Frage neu zu suchen, kompiliert der Agent Wissen <strong>einmalig</strong> zu verknüpften Wiki-Seiten in <strong>Obsidian</strong> — deinem zweiten Gehirn. Jede Quelle wird abstrahiert, mit bestehendem Wissen verknüpft und dauerhaft gespeichert. Beim nächsten Zugriff ist alles schon da — verknüpft, geprüft, widerspruchsfrei. Ideal für persönliches, wachsendes Wissen, das wiederkehrende Fragen beantwortet.</p>
+    </div>
+    <div style="text-align: center; margin: 2rem 0;">
+        <img src="weg2-karpathy-wiki.jpg" alt="LLM Wiki nach Karpathy: RAW → cloud.md → Agent abstrahiert → Wiki in Obsidian" style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(61,165,165,0.3);">
+    </div>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">📁</div>
+            <h3>RAW — Die Quelle der Wahrheit</h3>
+            <p>Originaldokumente: PDFs, Transkripte, Web-Clips. Der Agent liest hier, schreibt aber niemals hinein. Unveränderlich. Bei Fehlern lässt sich daran korrigieren.</p>
+            <span class="tag">Nur lesen</span>
+        </div>
+        <div class="card">
+            <div class="icon">📝</div>
+            <h3>Wiki — Vom PA-Agenten gepflegt</h3>
+            <p>Konzept-Seiten, Entitäten, Vergleiche. Der Agent abstrahiert, verknüpft, aktualisiert. Jede Seite hat Quellen, Tags und Querverweise. Eine wachsende Wissensbasis in Obsidian — deinem zweiten Gehirn.</p>
+            <span class="tag">Agent schreibt</span>
+        </div>
+        <div class="card">
+            <div class="icon">☁️</div>
+            <h3>cloud.md — Die Disziplin</h3>
+            <p>Die Regeln, die steuern, was der Agent tut, wenn neue Quellen landen. Ohne sie wäre er ein Chatbot. Mit ihr wird er zum Kurator, der das Wiki pflegt. Standardisiert durch Googles OKF-Format.</p>
+            <span class="tag">Steuerung</span>
+        </div>
+    </div>
+    <div class="arch-container" style="margin-top: 2rem;">
+        <div class="arch-diagram">
+            <div class="arch-box teal">
+                <h4>📥 Neue Quelle in RAW/</h4>
+                <p>PDF, Transkript, Web-Clip</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box teal">
+                <h4>🧠 PA-Agent liest cloud.md + SCHEMA.md</h4>
+                <p>Regeln und Format laden</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box teal">
+                <h4>✍️ Abstrahieren & Verknüpfen</h4>
+                <p>Neue Wiki-Seiten oder bestehende ergänzen</p>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-row">
+                <div class="arch-mini">📄 index.md</div>
+                <div class="arch-mini">📋 log.md</div>
+                <div class="arch-mini">🔗 [[Wikilinks]]</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEG 2: RAG (FIRMENWEIT, RELATIONFLOW) -->
+    <div class="callout" style="margin-top: 3rem; margin-bottom: 2rem;">
+        <h3>🔍 Weg 2: Corporate LLM mit RAG — für die firmenweite Implementierung</h3>
+        <p>Wenn das Wissen nicht nur für eine Person, sondern für die <strong>ganze Firma</strong> nutzbar werden soll: Alle Dokumente liegen in einer Vektordatenbank. Bei jeder Frage sucht die KI nach passenden Passagen, generiert eine Antwort und vergisst den Zusammenhang wieder. Ideal für <strong>große, unstrukturierte Dokumentenberge</strong> — Handbücher, Schaltpläne, Verträge. Die KI findet Nadeln im Heuhaufen, ohne dass jemand vorab alles lesen und strukturieren muss. Diesen Ansatz verfolgen wir über <strong>RelationFlow</strong> und dozieren ihn in unserer Mitarbeiterschulung.</p>
     </div>
     <div style="text-align: center; margin: 2rem 0;">
         <img src="weg1-rag-corporate-llm.jpg" alt="Corporate LLM mit RAG: Dokumentenberge → Vektordatenbank → Just-in-Time Retrieval → Antwort generiert" style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(61,165,165,0.3);">
@@ -503,64 +556,18 @@
             <span class="tag">Datenschutz</span>
         </div>
     </div>
-
-    <!-- WEG 2: KARPATHY -->
-    <div class="callout" style="margin-top: 3rem; margin-bottom: 2rem;">
-        <h3>🧠 Weg 2: LLM Wiki nach Karpathy (in Obsidian)</h3>
-        <p>Der alternative Ansatz nach Andrej Karpathy: Statt bei jeder Frage neu zu suchen, kompiliert der Agent Wissen <strong>einmalig</strong> zu verknüpften Wiki-Seiten. Jede Quelle wird abstrahiert, mit bestehendem Wissen verknüpft und dauerhaft gespeichert. Beim nächsten Zugriff ist alles schon da — verknüpft, geprüft, widerspruchsfrei. Ideal für strukturiertes, wachsendes Wissen, das wiederkehrende Fragen beantwortet.</p>
-    </div>
-    <div style="text-align: center; margin: 2rem 0;">
-        <img src="weg2-karpathy-wiki.jpg" alt="LLM Wiki nach Karpathy: RAW → cloud.md → Agent abstrahiert → Wiki in Obsidian" style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(61,165,165,0.3);">
-    </div>
-    <div class="card-grid">
-        <div class="card">
-            <div class="icon">📁</div>
-            <h3>RAW — Die Quelle der Wahrheit</h3>
-            <p>Originaldokumente: PDFs, Transkripte, Web-Clips. Der Agent liest hier, schreibt aber niemals hinein. Unveränderlich. Bei Fehlern lässt sich daran korrigieren.</p>
-            <span class="tag">Nur lesen</span>
-        </div>
-        <div class="card">
-            <div class="icon">📝</div>
-            <h3>Wiki — Vom Agenten gepflegt</h3>
-            <p>Konzept-Seiten, Entitäten, Vergleiche. Der Agent abstrahiert, verknüpft, aktualisiert. Jede Seite hat Quellen, Tags und Querverweise. Eine wachsende Wissensbasis in Obsidian — deinem zweiten Gehirn.</p>
-            <span class="tag">Agent schreibt</span>
-        </div>
-        <div class="card">
-            <div class="icon">☁️</div>
-            <h3>cloud.md — Die Disziplin</h3>
-            <p>Die Regeln, die steuern, was der Agent tut, wenn neue Quellen landen. Ohne sie wäre er ein Chatbot. Mit ihr wird er zum Kurator, der das Wiki pflegt. Standardisiert durch Googles OKF-Format.</p>
-            <span class="tag">Steuerung</span>
-        </div>
-    </div>
-    <div class="arch-container" style="margin-top: 2rem;">
-        <div class="arch-diagram">
-            <div class="arch-box teal">
-                <h4>📥 Neue Quelle in RAW/</h4>
-                <p>PDF, Transkript, Web-Clip</p>
-            </div>
-            <div class="arch-arrow">↓</div>
-            <div class="arch-box teal">
-                <h4>🧠 Agent liest cloud.md + SCHEMA.md</h4>
-                <p>Regeln und Format laden</p>
-            </div>
-            <div class="arch-arrow">↓</div>
-            <div class="arch-box teal">
-                <h4>✍️ Abstrahieren & Verknüpfen</h4>
-                <p>Neue Wiki-Seiten oder bestehende ergänzen</p>
-            </div>
-            <div class="arch-arrow">↓</div>
-            <div class="arch-row">
-                <div class="arch-mini">📄 index.md</div>
-                <div class="arch-mini">📋 log.md</div>
-                <div class="arch-mini">🔗 [[Wikilinks]]</div>
-            </div>
-        </div>
+    <div class="callout" style="margin-top: 2rem;">
+        <h3>🎓 100% geförderte Mitarbeiterschulung</h3>
+        <p>Wir dozieren diesen Ansatz in unserer KI-Schulung für Mitarbeiter — <strong>100% gefördert</strong> über QCG/Bildungsgutschein. Deine Mitarbeiter lernen, wie sie RAG-Systeme in der Praxis einsetzen und das Firmenwissen für die KI nutzbar machen.</p>
+        <a href="mailto:timo@hermetikmarketing.de?subject=100%25%20geförderte%20KI-Schulung" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">
+            Förder-Info anfragen →
+        </a>
     </div>
 
     <!-- VERGLEICH -->
     <div class="callout">
         <h3>⚖️ Welcher Weg für dich?</h3>
-        <p><strong>RAG</strong> ist richtig, wenn du einen großen, unstrukturierten Dokumentenbestand hast und die KI schnell Antworten finden soll — ohne dass jemand vorab alles strukturiert. <strong>Das LLM Wiki</strong> ist richtig, wenn dein Wissen wächst, wiederkehrende Fragen hat und die KI Zusammenhänge verstehen soll, nicht nur Passagen finden. Wir testen beide Ansätze, bewerten sie an deiner Firmenstruktur und empfehlen den passenden — oder eine Kombination.</p>
+        <p><strong>Weg 1 (LLM Wiki)</strong> ist richtig für deinen persönlichen PA-Agenten — wenn dein Wissen wächst, du wiederkehrende Fragen hast und die KI Zusammenhänge verstehen soll. <strong>Weg 2 (RAG über RelationFlow)</strong> ist richtig, wenn du das Wissen firmenweit verfügbar machen willst — über 10.000+ Dokumente, ohne Vorab-Strukturierung. Wir testen beide Ansätze, bewerten sie an deiner Firmenstruktur und empfehlen den passenden — oder eine Kombination.</p>
     </div>
 </section>
 
