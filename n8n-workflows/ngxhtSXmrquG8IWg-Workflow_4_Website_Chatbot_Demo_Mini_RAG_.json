@@ -1,0 +1,236 @@
+{
+  "name": "Workflow 4 — Website-Chatbot (Demo, Mini-RAG)",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hallo! 👋 Ich bin der digitale Assistent von Hermetikmarketing.\nFrag mich, wie KI, CRM und Automatisierung deinem Betrieb helfen können.",
+        "options": {
+          "inputPlaceholder": "Deine Frage …",
+          "subtitle": "Dein KI-Assistent — ehrliche Antworten, keine Warteschleife.",
+          "title": "Hermetikmarketing",
+          "responseMode": "streaming"
+        }
+      },
+      "id": "97ff9445-6b4a-4424-973d-48cd84fc7ef5",
+      "name": "Website-Chat",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "3fba1f3e-5792-4abc-a13a-e2a2c35935a6"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Du bist der digitale Assistent von Hermetikmarketing und sprichst mit Besuchern der Webseite. Du duzt, antwortest kurz, klar und ohne Marketing-Floskeln, immer auf Deutsch.\n\n== DEINE WISSENSBASIS (nur hieraus antworten) ==\n\nHermetikmarketing (Gründer: Timo Merz) baut KI-, CRM- und Automationssysteme für kleine Unternehmen und Handwerksbetriebe.\n\nDas Angebot — ein eigenes KI-Arbeitssystem statt zehn Abo-Tools:\n1. Zweites Gehirn: Firmenwissen strukturiert und per KI abfragbar.\n2. Persönlicher Assistent & KI-Agenten: Routineaufgaben wie Anfragen, Angebote und Nachfassen laufen automatisch — Entwürfe von der KI, Freigabe durch den Menschen.\n3. Automationen & CRM: Leads, Termine und Kundenkommunikation in einem System, ohne Zettelwirtschaft.\n4. Eigener EU-Server: Alle Daten liegen auf dem eigenen Server in Deutschland — volle Datenhoheit, DSGVO-freundlich, keine Abhängigkeit von US-Abos.\n\nLeitbild \"Unternehmensorchester\": Ein Betrieb ist ein Orchester — wir sorgen dafür, dass Kommunikation (Hermes), Marktströmung (Poseidon) und Neustarts (Phönix) zusammenspielen statt durcheinander.\n\nKontakt: timo@hermetikmarketing.de — Erstgespräch ist kostenlos und unverbindlich.\n\n== DEINE REGELN ==\n1. Antworte NUR aus der Wissensbasis. Wenn du etwas nicht weißt (z. B. Preise im Detail), sag das ehrlich und biete das Erstgespräch an. Erfinde nichts.\n2. Wenn ein Besucher Interesse zeigt, frage freundlich nach Name und E-Mail-Adresse (Firma optional).\n3. Sobald du Name UND E-Mail hast, rufe EINMAL das Werkzeug \"Lead_speichern\" auf und fasse dabei das Anliegen im Feld anliegen kurz zusammen. Bestätige dem Besucher danach, dass sich Timo persönlich meldet.\n4. Keine Rechts-, Steuer- oder Preiszusagen. Bei solchen Fragen aufs Erstgespräch verweisen.\n5. Bleib beim Thema Hermetikmarketing. Bei komplett fremden Themen freundlich zurücklenken.",
+          "maxIterations": 8
+        }
+      },
+      "id": "7b4348db-3242-481e-afb5-36c5db42dbbd",
+      "name": "Hermetikmarketing-Assistent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        560,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {
+          "maxTokensToSample": 1024
+        }
+      },
+      "id": "ed36eeb0-cd64-4e4d-a36c-feae39415823",
+      "name": "Claude Modell",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        432,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "id": "adda9b3b-6bc0-463e-a843-00935fff07da",
+      "name": "Gesprächsgedächtnis",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        624,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "KSOW2l8rJyxYFqMp",
+          "cachedResultName": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', 'Vollständiger Name des Interessenten') }}",
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', 'E-Mail-Adresse des Interessenten') }}",
+            "firma": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('firma', 'Firma des Interessenten, leer lassen wenn nicht genannt') }}",
+            "nachricht": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('anliegen', 'Kurze Zusammenfassung des Anliegens aus dem Chatverlauf') }}",
+            "quelle": "Website-Chat",
+            "eingegangen_am": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "firma",
+              "displayName": "firma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nachricht",
+              "displayName": "nachricht",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "quelle",
+              "displayName": "quelle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "eingegangen_am",
+              "displayName": "eingegangen_am",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9bc65ef8-5796-49a0-b719-690e9b680a2f",
+      "name": "Lead_speichern",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 4 — Website-Chatbot mit Mini-Wissensbasis\n\nDemo-Blueprint (EU-CRM-Stack): Chat-Fenster für die Webseite.\n\n**So funktioniert es:**\n- Besucher chattet → Claude antwortet aus der Wissensbasis (im System-Prompt)\n- Bei Interesse fragt der Agent nach Name + E-Mail\n- Werkzeug **Lead_speichern** schreibt den Lead in die Tabelle „Leads\" (gleiche Tabelle wie Workflow 1)\n\n**Vor dem Aktivieren nötig:**\n- Zugang „Anthropic API\" (API-Schlüssel) in n8n anlegen\n\n**Später (echtes RAG):** Wissensbasis in Vektor-Datenbank auf dem Hetzner-Server auslagern, sobald der Server steht.\n\n⚠️ Nur Demo-Daten — keine echten Personendaten (AVV-Leitplanke).",
+        "height": 200,
+        "width": 620,
+        "color": 5
+      },
+      "id": "66d7920d-74b7-47a3-92f6-501866f0fc4d",
+      "name": "Sticky Note 707fe981",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Website-Chat": {
+      "main": [
+        [
+          {
+            "node": "Hermetikmarketing-Assistent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Modell": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hermetikmarketing-Assistent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gesprächsgedächtnis": {
+      "ai_memory": [
+        [
+          {
+            "node": "Hermetikmarketing-Assistent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead_speichern": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hermetikmarketing-Assistent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

@@ -1,0 +1,682 @@
+{
+  "name": "Klassenbuch – Wochenlauf (Produktiv)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3937ff07-cdb3-4b82-9330-e07dc15fc2bc",
+      "name": "Manuell testen",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        192,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc",
+              "name": "zoomAccountId",
+              "value": "KpxaGALIThmuZwACgPEmgA",
+              "type": "string"
+            },
+            {
+              "id": "usr",
+              "name": "zoomUserId",
+              "value": "timo-merz@web.de",
+              "type": "string"
+            },
+            {
+              "id": "mtg",
+              "name": "courseMeetingId",
+              "value": "85742650241",
+              "type": "string"
+            },
+            {
+              "id": "von",
+              "name": "von",
+              "value": "={{ $now.minus({ days: 7 }).toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            },
+            {
+              "id": "bis",
+              "name": "bis",
+              "value": "={{ $now.toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e5673b40-95d1-45c5-94bd-bcd646997ae3",
+      "name": "Konfiguration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 16,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "3b65f61e-dc2e-4528-ac48-76d3725a3a4e",
+      "name": "Freitag 16:30",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zoom.us/oauth/token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "account_credentials"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.zoomAccountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0acb366-a1f7-44fd-a21d-0850e3ecded9",
+      "name": "Zoom Token holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        320
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9JpCFOYaln5ccIiH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/users/{{ $(\"Konfiguration\").item.json.zoomUserId }}/meetings",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $(\"Konfiguration\").item.json.von }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ $(\"Konfiguration\").item.json.bis }}"
+            },
+            {
+              "name": "type",
+              "value": "past"
+            },
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "068e4d4e-38ac-4d77-8b73-0ec88024a104",
+      "name": "Meetings der Woche holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "meetings",
+        "options": {}
+      },
+      "id": "a2e909dd-802a-4ca9-bc78-170c29e798b6",
+      "name": "Meetings einzeln",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        960,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "={{ $(\"Konfiguration\").item.json.courseMeetingId }}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "a77a07f7-1247-40d2-b313-a0828c3f4191",
+      "name": "Nur Kurs-Meeting",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/meetings/{{ encodeURIComponent(encodeURIComponent($json.uuid)) }}/participants",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $(\"Zoom Token holen\").item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1100
+            }
+          }
+        }
+      },
+      "id": "d71f9836-c402-4705-b472-07f7d9ee6b95",
+      "name": "Teilnehmer je Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1312,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const NL=String.fromCharCode(10);\nfunction unwrap(v){ if(typeof v==='object'&&v!==null){ if(v.start)return v.start; if(v.name)return v.name; if(Array.isArray(v))return v.map(x=>(x&&(x.plain_text||x.name))||'').join(', '); return ''; } return v; }\nfunction flatKey(k){ return 'property_'+k.toString().toLowerCase().replace(/[^a-z0-9äöüß]+/g,'_'); }\nfunction getVal(o,k){ if(o[k]!==undefined&&o[k]!==null) return unwrap(o[k]); const fk=flatKey(k); if(o[fk]!==undefined&&o[fk]!==null) return unwrap(o[fk]); const props=o.properties||{}; const p=props[k]; if(!p)return undefined; if(p.type==='title')return (p.title||[]).map(t=>t.plain_text).join(''); if(p.type==='rich_text')return (p.rich_text||[]).map(t=>t.plain_text).join(''); if(p.type==='select')return p.select?p.select.name:''; if(p.type==='status')return p.status?p.status.name:''; if(p.type==='checkbox')return p.checkbox; if(p.type==='date')return p.date?p.date.start:''; if(p.type==='email')return p.email; return undefined; }\nconst norm=(s)=>(s||'').toString().trim().toLowerCase().replace(/\\s+/g,' ');\nconst roster=[]; const ignoreNames=[];\nfor(const it of $('Teilnehmer-Liste lesen').all()){ const o=it.json; const name=(getVal(o,'Name')||'').toString().trim(); if(!name)continue; const rolle=(getVal(o,'Rolle')||'').toString(); const aktiv=getVal(o,'Aktiv'); const sollRaw=(getVal(o,'Soll-Zeit')||'').toString(); const soll=sollRaw.indexOf('15')>=0?'9-15':'9-12'; const aliasRaw=(getVal(o,'Zoom-Anzeigename')||'').toString(); const aliases=[name].concat(aliasRaw.split(',')).map(s=>s.trim()).filter(Boolean); const abRaw=getVal(o,'Dabei ab'); const ab=abRaw?abRaw.toString().slice(0,10):''; const isAktiv=(aktiv===true||aktiv==='true'||aktiv==='__YES__'); if(rolle==='Teilnehmer'&&isAktiv){ roster.push({name,soll,aliases,ab}); } else { for(const a of aliases) ignoreNames.push(a); } }\nif(roster.length===0){ throw new Error('Doppel-Schutz: Die Teilnehmerliste aus Notion konnte nicht gelesen werden (Roster leer). Es wurde NICHTS ins Klassenbuch geschrieben. Bitte die Notion-Verbindung und die Feldnamen der Teilnehmer-Datenbank pruefen.'); }\nconst extraIgnore=['timo-merz@web.de','iphone von timo','timo merz','meral celik'];\nconst aliasMap={}; for(const p of roster) for(const a of p.aliases) aliasMap[norm(a)]=p;\nconst ignoreSet=new Set(ignoreNames.concat(extraIgnore).map(norm));\nconst sollWindow={'9-12':[9,12],'9-15':[9,15]};\nconst pageByDate={}; for(const it of $('Klassenbuch lesen').all()){ const o=it.json; let dv=getVal(o,'Datum'); if(dv){ dv=dv.toString().slice(0,10); let pid=o.id||''; if(!pid&&o.url){ const parts=o.url.split('-'); pid=parts[parts.length-1]; } if(pid) pageByDate[dv]=pid; } }\nconst rows=[]; for(const item of $('Teilnehmer je Meeting').all()){ const parts=(item.json&&item.json.participants)||[]; for(const p of parts){ if(!p.join_time)continue; rows.push({name:p.name||'',join:new Date(p.join_time),leave:p.leave_time?new Date(p.leave_time):new Date(p.join_time)}); } }\nconst berlinDate=(d)=>DateTime.fromJSDate(d).setZone('Europe/Berlin').toFormat('yyyy-MM-dd');\nconst fmtBerlin=(ms)=>DateTime.fromMillis(ms).setZone('Europe/Berlin').toFormat('HH:mm');\nconst wochentage=['So','Mo','Di','Mi','Do','Fr','Sa'];\nfunction isoWeek(dstr){ const d=new Date(dstr+'T00:00:00Z'); const day=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-day+3); const ft=new Date(Date.UTC(d.getUTCFullYear(),0,4)); const fd=(ft.getUTCDay()+6)%7; ft.setUTCDate(ft.getUTCDate()-fd+3); return 1+Math.round((d.getTime()-ft.getTime())/(7*86400000)); }\nconst meetingEnd={}; for(const r of rows){ const dt=berlinDate(r.join); const lv=r.leave.getTime(); if(!(dt in meetingEnd)||lv>meetingEnd[dt]) meetingEnd[dt]=lv; }\nconst byDate={}; for(const r of rows){ const nn=norm(r.name); if(ignoreSet.has(nn))continue; const date=berlinDate(r.join); byDate[date]=byDate[date]||{persons:{},unknown:{}}; const person=aliasMap[nn]; if(person){ byDate[date].persons[person.name]=byDate[date].persons[person.name]||{person,sessions:[]}; byDate[date].persons[person.name].sessions.push([r.join,r.leave]); } else { byDate[date].unknown[r.name]=(byDate[date].unknown[r.name]||0)+1; } }\nfunction minutesIn(sessions,ws,we){ let ivs=sessions.map(([s,e])=>[Math.max(s.getTime(),ws),Math.min(e.getTime(),we)]).filter(([s,e])=>e>s); ivs.sort((a,b)=>a[0]-b[0]); let total=0,cs=null,ce=null; for(const [s,e] of ivs){ if(cs===null){cs=s;ce=e;} else if(s<=ce){ce=Math.max(ce,e);} else {total+=ce-cs;cs=s;ce=e;} } if(cs!==null)total+=ce-cs; return Math.round(total/60000); }\nfunction rawSpan(sessions){ let mn=null,mx=null; for(const [s,e] of sessions){ const st=s.getTime(),et=e.getTime(); if(mn===null||st<mn)mn=st; if(mx===null||et>mx)mx=et; } return [mn,mx]; }\nconst out=[];\nfor(const date of Object.keys(byDate).sort()){ const bucket=byDate[date]; const dayStartDT=DateTime.fromISO(date,{zone:'Europe/Berlin'}).startOf('day'); const mEnd=meetingEnd[date]; const anwesende=[]; const present=new Set();\n for(const key in bucket.persons){ const {person,sessions}=bucket.persons[key]; present.add(key); const [wsH,weH]=sollWindow[person.soll]; const ws=dayStartDT.plus({hours:wsH}).toMillis(); const we=dayStartDT.plus({hours:weH}).toMillis(); const effEnd=Math.min(we,mEnd); const erreichbar=Math.max(0,Math.round((effEnd-ws)/60000)); const min=minutesIn(sessions,ws,effEnd); const cov=erreichbar>0?min/erreichbar:0; const sp=rawSpan(sessions); const status=min<=0?'⚠️ Rücksprache':(cov>=0.6?'✅ erfüllt':'⚠️ Rücksprache'); anwesende.push({name:person.name,soll:person.soll+' Uhr',von:fmtBerlin(sp[0]),bis:fmtBerlin(sp[1]),minuten:min,abdeckung:Math.round(cov*100)+'%',status}); }\n anwesende.sort((a,b)=>a.name.localeCompare(b.name));\n const aktivAmTag=roster.filter(p=>!p.ab||date>=p.ab);\n const abwesende=aktivAmTag.filter(p=>!present.has(p.name)).map(p=>p.name);\n const rueck=anwesende.filter(a=>a.status.indexOf('Rücksprache')>=0).map(a=>a.name);\n const unbekannt=Object.keys(bucket.unknown);\n const d=new Date(date+'T12:00:00Z'); const wt=wochentage[d.getUTCDay()];\n const pp=date.split('-'); const dmy=pp[2]+'.'+pp[1]+'.'+pp[0];\n const lines=anwesende.map(a=>a.name+' ('+a.soll+'): '+a.von+'–'+a.bis+' · '+a.minuten+' Min · '+a.abdeckung+' · '+a.status);\n let extra=''; if(unbekannt.length) extra=NL+'⚠️ Unbekannt: '+unbekannt.join(', ');\n const anwesenheit_text='Meeting-Ende: '+fmtBerlin(mEnd)+NL+lines.join(NL)+extra;\n const pid=pageByDate[date]||'';\n out.push({json:{datum:date,wochentag:wt,kurstag:wt+', '+dmy,kw:isoWeek(date),meeting_ende:fmtBerlin(mEnd),anwesend_anzahl:anwesende.length,teilnehmer_gesamt:aktivAmTag.length,abwesend_text:abwesende.length?abwesende.join(', '):'—',ruecksprache_text:rueck.length?rueck.join(', '):'—',anwesenheit_text,unbekannt,existing_page_id:pid,vorhanden:pid?'ja':'nein'}}); }\nreturn out;"
+      },
+      "id": "68f1a280-c99a-4bb7-9819-f13d75f26f39",
+      "name": "Auswertung",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.vorhanden }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "ja"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8f50c8bc-c2b4-47ee-9b8f-34d4722d66b8",
+      "name": "Zeile schon da?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.existing_page_id }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Anwesend|number",
+              "numberValue": "={{ $json.anwesend_anzahl }}"
+            },
+            {
+              "key": "TN gesamt|number",
+              "numberValue": "={{ $json.teilnehmer_gesamt }}"
+            },
+            {
+              "key": "Abwesend|rich_text",
+              "textContent": "={{ $json.abwesend_text }}"
+            },
+            {
+              "key": "Rücksprache|rich_text",
+              "textContent": "={{ $json.ruecksprache_text }}"
+            },
+            {
+              "key": "Anwesenheit (Auto)|rich_text",
+              "textContent": "={{ $json.anwesenheit_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "75bb7e7d-f1d9-49ac-9527-53eebbfb9ed5",
+      "name": "Klassenbuch aktualisieren",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1920,
+        208
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "Ba5ivP3bydLAPWng",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "9615841b-ea00-4f88-a18e-fa965650bfe6"
+        },
+        "title": "={{ $json.kurstag }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Datum|date",
+              "includeTime": false,
+              "date": "={{ $json.datum }}"
+            },
+            {
+              "key": "Wochentag|select",
+              "selectValue": "={{ $json.wochentag }}"
+            },
+            {
+              "key": "KW|number",
+              "numberValue": "={{ $json.kw }}"
+            },
+            {
+              "key": "Anwesend|number",
+              "numberValue": "={{ $json.anwesend_anzahl }}"
+            },
+            {
+              "key": "TN gesamt|number",
+              "numberValue": "={{ $json.teilnehmer_gesamt }}"
+            },
+            {
+              "key": "Abwesend|rich_text",
+              "textContent": "={{ $json.abwesend_text }}"
+            },
+            {
+              "key": "Rücksprache|rich_text",
+              "textContent": "={{ $json.ruecksprache_text }}"
+            },
+            {
+              "key": "Anwesenheit (Auto)|rich_text",
+              "textContent": "={{ $json.anwesenheit_text }}"
+            },
+            {
+              "key": "Status|select",
+              "selectValue": "🟡 prüfen"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1ec9425c-9fb7-4d25-804e-16a01e85cbae",
+      "name": "Klassenbuch anlegen",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1920,
+        448
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "Ba5ivP3bydLAPWng",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "dataSourceId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "50f98396-4a28-43cf-b84d-a1579637102d"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "7afc36b2-d7fd-4a92-b4da-c7e56e0c57b6",
+      "name": "Teilnehmer-Liste lesen",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        608,
+        544
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "Ba5ivP3bydLAPWng",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "dataSourceId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "9615841b-ea00-4f88-a18e-fa965650bfe6"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "6d78bfc1-7e10-49df-91b4-ec120956964d",
+      "name": "Klassenbuch lesen",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        608,
+        704
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "Ba5ivP3bydLAPWng",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Klassenbuch – Wochenlauf (Produktiv)\nLäuft Freitag 16:30 (oder manuell). Liest Teilnehmer live aus Notion, holt Zoom-Anwesenheit des Kurs-Meetings 85742650241, rechnet je Kurstag aus und UPSERTET die Klassenbuch-Zeile (aktualisieren falls vorhanden, sonst anlegen).\n\n**Regeln:**\n- Update lässt Status/Thema/Zusammenfassung unangetastet — deine Einträge überleben jeden Lauf.\n- Zeiten über echte Europe/Berlin-Zeitzone (überlebt die Umstellung am 25.10.).\n- Soll-Zeit, Aliasse und \"Dabei ab\" kommen live aus der Notion-Teilnehmer-DB, nicht aus dem Code. Änderungen dort, nicht hier.\n- Doppel-Schutz: Wenn die Teilnehmerliste leer ankommt, bricht der Lauf mit Fehler ab und schreibt NICHTS.\n\n**Achtung:** Nachgewiesen wird Zoom-Anwesenheit, nicht Teilnahme. Jede Zeile landet auf 🟡 prüfen und braucht Timos Freigabe.",
+        "height": 440,
+        "width": 2040,
+        "color": 6
+      },
+      "id": "80c18471-5c7e-4338-9007-754edd68751e",
+      "name": "Sticky Note 52d110fc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "73aa9f04-e199-444d-ba34-3ffd781f8a10",
+      "name": "Zusammenführen",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1408,
+        448
+      ]
+    }
+  ],
+  "connections": {
+    "Manuell testen": {
+      "main": [
+        [
+          {
+            "node": "Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Zoom Token holen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Teilnehmer-Liste lesen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Klassenbuch lesen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Freitag 16:30": {
+      "main": [
+        [
+          {
+            "node": "Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zoom Token holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings der Woche holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings der Woche holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings einzeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings einzeln": {
+      "main": [
+        [
+          {
+            "node": "Nur Kurs-Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nur Kurs-Meeting": {
+      "main": [
+        [
+          {
+            "node": "Teilnehmer je Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auswertung": {
+      "main": [
+        [
+          {
+            "node": "Zeile schon da?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zeile schon da?": {
+      "main": [
+        [
+          {
+            "node": "Klassenbuch aktualisieren",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Klassenbuch anlegen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teilnehmer je Meeting": {
+      "main": [
+        [
+          {
+            "node": "Zusammenführen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teilnehmer-Liste lesen": {
+      "main": [
+        [
+          {
+            "node": "Zusammenführen",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Klassenbuch lesen": {
+      "main": [
+        [
+          {
+            "node": "Zusammenführen",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Zusammenführen": {
+      "main": [
+        [
+          {
+            "node": "Auswertung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Europe/Berlin",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Freitag 16:30": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

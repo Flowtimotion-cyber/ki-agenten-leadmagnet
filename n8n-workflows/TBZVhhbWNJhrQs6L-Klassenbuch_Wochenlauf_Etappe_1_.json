@@ -1,0 +1,349 @@
+{
+  "name": "Klassenbuch – Wochenlauf (Etappe 1)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c3127db5-2b76-482b-9a76-5e5c0b71fccc",
+      "name": "Test starten",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        208,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc",
+              "name": "zoomAccountId",
+              "value": "KpxaGALIThmuZwACgPEmgA",
+              "type": "string"
+            },
+            {
+              "id": "usr",
+              "name": "zoomUserId",
+              "value": "timo-merz@web.de",
+              "type": "string"
+            },
+            {
+              "id": "mtg",
+              "name": "courseMeetingId",
+              "value": "85742650241",
+              "type": "string"
+            },
+            {
+              "id": "von",
+              "name": "von",
+              "value": "={{ $now.minus({ days: 7 }).toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            },
+            {
+              "id": "bis",
+              "name": "bis",
+              "value": "={{ $now.toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "69dc5dd1-deab-4c2a-a714-19864d161db1",
+      "name": "Konfiguration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zoom.us/oauth/token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "account_credentials"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.zoomAccountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8caf061d-177e-433a-810e-65d6712ca743",
+      "name": "Zoom Token holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        304
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9JpCFOYaln5ccIiH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/users/{{ $(\"Konfiguration\").item.json.zoomUserId }}/meetings",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $(\"Konfiguration\").item.json.von }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ $(\"Konfiguration\").item.json.bis }}"
+            },
+            {
+              "name": "type",
+              "value": "past"
+            },
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "889d9c29-9db9-45d0-82cd-c11d46c1803a",
+      "name": "Meetings der Woche holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "meetings",
+        "options": {}
+      },
+      "id": "feab66c3-59e0-4f0f-9eb6-b1d1b6cdb161",
+      "name": "Meetings einzeln",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "={{ $(\"Konfiguration\").item.json.courseMeetingId }}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "e37694a6-d8cf-4a18-bb68-d0cd8e43b8a2",
+      "name": "Nur Kurs-Meeting",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/meetings/{{ encodeURIComponent(encodeURIComponent($json.uuid)) }}/participants",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $(\"Zoom Token holen\").item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1100
+            }
+          }
+        }
+      },
+      "id": "fb912d20-39ad-4254-ba9f-fb50196c3160",
+      "name": "Teilnehmer je Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1408,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const roster = [\n  { name: 'Kristina Deininger-Knapp', soll: '9-15', aliases: ['kristina deininger-knapp','kristina knapp'] },\n  { name: 'Timo Müllerschön', soll: '9-15', aliases: ['timo müllerschön','timo muellerschön','timo müllerschoen'] },\n  { name: 'Martin Keller', soll: '9-12', aliases: ['martin keller'] },\n  { name: 'Tanja Becker', soll: '9-12', aliases: ['tanja becker'] },\n  { name: 'Sascha Weingärtner', soll: '9-12', aliases: ['sascha','sascha weingärtner','sascha weingaertner'] },\n  { name: 'Raphael Kroul', soll: '9-12', aliases: ['raphael kroul','rkroul','raphaels iphone'] },\n  { name: 'Luca-Enrico Fauth', soll: '9-12', aliases: ['luca fauth','luca-enrico fauth','luca enrico fauth'] },\n  { name: 'Sandro Röhricht', soll: '9-12', aliases: ['sandro röhricht','sandro roehricht'] },\n  { name: 'Daniel Peukert', soll: '9-12', aliases: ['daniel peukert'] },\n];\nconst ignore = ['timo merz','iphone von timo','timo-merz@web.de','meral celik'];\nconst norm = (s) => (s||'').toString().trim().toLowerCase().replace(/\\s+/g,' ');\nconst aliasMap = {};\nfor (const p of roster) for (const a of p.aliases) aliasMap[norm(a)] = p;\nconst ignoreSet = new Set(ignore.map(norm));\nconst sollWindow = { '9-12': [7,10], '9-15': [7,13] };\nconst rows = [];\nfor (const item of $input.all()) {\n  const parts = (item.json && item.json.participants) || [];\n  for (const p of parts) {\n    if (!p.join_time) continue;\n    rows.push({ name: p.name || '', join: new Date(p.join_time), leave: p.leave_time ? new Date(p.leave_time) : new Date(p.join_time) });\n  }\n}\nconst berlinDate = (d) => new Date(d.getTime() + 2*3600*1000).toISOString().slice(0,10);\nconst fmtBerlin = (ms) => new Date(ms+2*3600*1000).toISOString().slice(11,16);\nconst wochentage = ['So','Mo','Di','Mi','Do','Fr','Sa'];\nconst meetingEnd = {};\nfor (const r of rows) { const dt = berlinDate(r.join); const lv = r.leave.getTime(); if (!(dt in meetingEnd) || lv > meetingEnd[dt]) meetingEnd[dt] = lv; }\nconst byDate = {};\nfor (const r of rows) {\n  const nn = norm(r.name);\n  if (ignoreSet.has(nn)) continue;\n  const date = berlinDate(r.join);\n  byDate[date] = byDate[date] || { persons: {}, unknown: {} };\n  const person = aliasMap[nn];\n  if (person) {\n    byDate[date].persons[person.name] = byDate[date].persons[person.name] || { person, sessions: [] };\n    byDate[date].persons[person.name].sessions.push([r.join, r.leave]);\n  } else {\n    byDate[date].unknown[r.name] = (byDate[date].unknown[r.name]||0) + 1;\n  }\n}\nfunction minutesIn(sessions, ws, we) {\n  let ivs = sessions.map(([s,e]) => [Math.max(s.getTime(), ws), Math.min(e.getTime(), we)]).filter(([s,e]) => e > s);\n  ivs.sort((a,b)=>a[0]-b[0]);\n  let total=0, cs=null, ce=null;\n  for (const [s,e] of ivs) { if (cs===null){cs=s;ce=e;} else if (s<=ce){ce=Math.max(ce,e);} else {total+=ce-cs;cs=s;ce=e;} }\n  if (cs!==null) total+=ce-cs;\n  return Math.round(total/60000);\n}\nfunction rawSpan(sessions){ let mn=null,mx=null; for (const [s,e] of sessions){ const st=s.getTime(),et=e.getTime(); if(mn===null||st<mn)mn=st; if(mx===null||et>mx)mx=et; } return [mn,mx]; }\nconst out = [];\nfor (const date of Object.keys(byDate).sort()) {\n  const bucket = byDate[date];\n  const dayStart = new Date(date + 'T00:00:00Z').getTime();\n  const mEnd = meetingEnd[date];\n  const anwesende = [];\n  const present = new Set();\n  for (const key in bucket.persons) {\n    const { person, sessions } = bucket.persons[key];\n    present.add(key);\n    const [wsH, weH] = sollWindow[person.soll];\n    const ws = dayStart + wsH*3600*1000;\n    const we = dayStart + weH*3600*1000;\n    const effEnd = Math.min(we, mEnd);\n    const erreichbar = Math.max(0, Math.round((effEnd - ws)/60000));\n    const min = minutesIn(sessions, ws, effEnd);\n    const cov = erreichbar > 0 ? min/erreichbar : 0;\n    const sp = rawSpan(sessions);\n    const status = min <= 0 ? '⚠️ Rücksprache' : (cov >= 0.6 ? '✅ erfüllt' : '⚠️ Rücksprache');\n    anwesende.push({ name: person.name, soll: person.soll + ' Uhr', von: fmtBerlin(sp[0]), bis: fmtBerlin(sp[1]), minuten: min, erreichbar_min: erreichbar, abdeckung: Math.round(cov*100) + '%', status });\n  }\n  const abwesende = roster.filter(p => !present.has(p.name)).map(p => p.name);\n  const unbekannt = Object.keys(bucket.unknown);\n  anwesende.sort((a,b)=>a.name.localeCompare(b.name));\n  const d = new Date(date + 'T12:00:00Z');\n  out.push({ json: { datum: date, wochentag: wochentage[d.getUTCDay()], meeting_ende: fmtBerlin(mEnd), anwesend_anzahl: anwesende.length, teilnehmer_gesamt: roster.length, ruecksprache: anwesende.filter(a=>a.status.includes('Rücksprache')).map(a=>a.name), anwesende, abwesende, unbekannt } });\n}\nreturn out;"
+      },
+      "id": "c79c6cfb-d790-428e-8983-53812aac4826",
+      "name": "Auswertung",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Klassenbuch – Wochenlauf (Etappe 1: Auswertung)\nFiltert das wiederkehrende Kurs-Meeting (ID 85742650241), rechnet Teilnehmer je Tag zusammen (Aliasse + Mehrfach-Einwahlen) und gibt pro Kurstag eine Vorschau aus. Schreibt noch NICHT nach Notion. Zeiten in MESZ (+2).",
+        "height": 200,
+        "width": 1700,
+        "color": 3
+      },
+      "id": "89d80f67-4657-4c8d-ae94-17ade221e319",
+      "name": "Sticky Note b930e526",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        64
+      ]
+    }
+  ],
+  "connections": {
+    "Test starten": {
+      "main": [
+        [
+          {
+            "node": "Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Zoom Token holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zoom Token holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings der Woche holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings der Woche holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings einzeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings einzeln": {
+      "main": [
+        [
+          {
+            "node": "Nur Kurs-Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nur Kurs-Meeting": {
+      "main": [
+        [
+          {
+            "node": "Teilnehmer je Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teilnehmer je Meeting": {
+      "main": [
+        [
+          {
+            "node": "Auswertung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

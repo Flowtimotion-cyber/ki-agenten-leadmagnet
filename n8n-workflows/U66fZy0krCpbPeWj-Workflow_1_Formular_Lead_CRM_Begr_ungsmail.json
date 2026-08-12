@@ -1,0 +1,321 @@
+{
+  "name": "Workflow 1 — Formular-Lead → CRM + Begrüßungsmail",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Kontaktanfrage",
+        "formDescription": "Erzähl uns kurz, worum es geht — wir melden uns innerhalb von 24 Stunden.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Dein Name",
+              "fieldName": "name",
+              "placeholder": "Max Mustermann",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Deine E-Mail-Adresse",
+              "fieldType": "email",
+              "fieldName": "email",
+              "placeholder": "max@firma.de",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Deine Firma",
+              "fieldName": "firma",
+              "placeholder": "Mustermann GmbH"
+            },
+            {
+              "fieldLabel": "Worum geht es?",
+              "fieldType": "textarea",
+              "fieldName": "nachricht",
+              "placeholder": "Kurz beschreiben, wobei wir helfen können …"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Anfrage senden",
+          "path": "lead-formular",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Danke für deine Anfrage! Du bekommst gleich eine Bestätigung per E-Mail."
+            }
+          }
+        }
+      },
+      "id": "a9c8fcfc-7ff0-4e6c-b441-35e1e946e034",
+      "name": "Lead-Formular",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "c60f4b8e-eae9-46ff-92c7-b7076f15e5f1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "lead-name",
+              "name": "name",
+              "value": "={{ $json.name ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "email",
+              "value": "={{ $json.email ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-firma",
+              "name": "firma",
+              "value": "={{ $json.firma ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-nachricht",
+              "name": "nachricht",
+              "value": "={{ $json.nachricht ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-quelle",
+              "name": "quelle",
+              "value": "Webformular",
+              "type": "string"
+            },
+            {
+              "id": "lead-eingegangen",
+              "name": "eingegangen_am",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-vorname",
+              "name": "vorname",
+              "value": "={{ ($json.name ?? \"\").trim().split(\" \")[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-nachname",
+              "name": "nachname",
+              "value": "={{ ($json.name ?? \"\").trim().split(\" \").slice(1).join(\" \") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c154673-cd18-4b95-bade-e8cf8601adb1",
+      "name": "Lead aufbereiten",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "KSOW2l8rJyxYFqMp",
+          "cachedResultName": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "firma": "={{ $json.firma }}",
+            "nachricht": "={{ $json.nachricht }}",
+            "quelle": "={{ $json.quelle }}",
+            "eingegangen_am": "={{ $json.eingegangen_am }}"
+          },
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "firma",
+              "displayName": "firma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nachricht",
+              "displayName": "nachricht",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "quelle",
+              "displayName": "quelle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "eingegangen_am",
+              "displayName": "eingegangen_am",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4ae1ea6f-0e9e-4c97-a652-9871bc312b34",
+      "name": "Lead in Tabelle speichern",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "<__PLACEHOLDER_VALUE__Twenty-CRM-URL, z. B. https://crm.deine-demo-domain.de/rest/people__>",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"name\": { \"firstName\": $(\"Lead aufbereiten\").item.json.vorname, \"lastName\": $(\"Lead aufbereiten\").item.json.nachname }, \"emails\": { \"primaryEmail\": $(\"Lead aufbereiten\").item.json.email } } }}",
+        "options": {}
+      },
+      "id": "9afe4746-e19c-4be8-a124-955c33969330",
+      "name": "Kontakt in Twenty CRM anlegen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "<__PLACEHOLDER_VALUE__Absender, z. B. Hermetikmarketing <hallo@deine-demo-domain.de>__>",
+        "toEmail": "={{ $('Lead aufbereiten').item.json.email }}",
+        "subject": "=Deine Anfrage ist angekommen, {{ $(\"Lead aufbereiten\").item.json.vorname }}",
+        "emailFormat": "text",
+        "text": "=Hallo {{ $(\"Lead aufbereiten\").item.json.vorname }},\n\ndanke für deine Anfrage — sie ist bei uns angekommen und wird nicht in einem Postfach versickern.\n\nSo geht es weiter: Wir schauen uns deine Nachricht an und melden uns innerhalb von 24 Stunden persönlich bei dir.\n\nDeine Angaben:\nFirma: {{ $(\"Lead aufbereiten\").item.json.firma }}\nNachricht: {{ $(\"Lead aufbereiten\").item.json.nachricht }}\n\nBis gleich\nTimo von Hermetikmarketing",
+        "options": {
+          "appendAttribution": false,
+          "replyTo": "timo@hermetikmarketing.de"
+        }
+      },
+      "id": "096e15bf-408d-41f2-a489-e88405894fcf",
+      "name": "Begrüßungsmail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        432
+      ],
+      "webhookId": "41294122-12d5-4e8f-9c7c-79f119c66a03",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 1 — Formular-Lead → CRM + Begrüßungsmail\n\nDemo-Blueprint (EU-CRM-Stack, Phase B):\n1. Formular nimmt die Anfrage entgegen\n2. Lead wird in der n8n-Tabelle **Leads** gespeichert (läuft sofort, ohne Zugänge)\n3. Kontakt wird in Twenty CRM angelegt (braucht: Server-URL + API-Key)\n4. Begrüßungsmail geht raus (braucht: SMTP-Zugang)\n\n⚠️ Nur Demo-Daten verwenden — keine echten Personendaten (AVV-Leitplanke).",
+        "height": 440,
+        "width": 1140,
+        "color": 4
+      },
+      "id": "aa64f5e1-5c87-4968-ac9e-a176fe5131ca",
+      "name": "Sticky Note 36bd42c3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -144
+      ]
+    }
+  ],
+  "connections": {
+    "Lead-Formular": {
+      "main": [
+        [
+          {
+            "node": "Lead aufbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead aufbereiten": {
+      "main": [
+        [
+          {
+            "node": "Lead in Tabelle speichern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead in Tabelle speichern": {
+      "main": [
+        [
+          {
+            "node": "Kontakt in Twenty CRM anlegen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Begrüßungsmail senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

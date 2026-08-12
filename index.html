@@ -132,6 +132,7 @@
         <li><a href="#architektur">Architektur</a></li>
         <li><a href="#modelle">Modelle</a></li>
         <li><a href="#composio">Tools</a></li>
+        <li><a href="#n8n">Workflows</a></li>
         <li><a href="#schritte">Setup</a></li>
         <li><a href="#kontakt">Kontakt</a></li>
     </ul>
@@ -211,23 +212,25 @@
 <!-- ARCHITEKTUR -->
 <section id="architektur">
     <h2>Die Architektur</h2>
-    <p class="subtitle">Wie alles zusammenarbeitet – vom Server bis zu deinem Smartphone.</p>
+    <p class="subtitle">Zwei Hermes-Instanzen, ein Server, ein Wissensspeicher – alles verbunden.</p>
     <div class="arch-container">
         <div class="arch-diagram">
             <div class="arch-box teal">
-                <h4>🖥️ Dein Hetzner-Server</h4>
-                <p>Docker · Linux · ab 5 €/Monat · voll unter deiner Kontrolle</p>
+                <h4>💻 Dein Rechner (lokal)</h4>
+                <p>Hermes Agent (Default-Profil) · bezahltes Modell · Manager ·-terminal/IDE</p>
+            </div>
+            <div class="arch-arrow">↕</div>
+            <div class="arch-box teal">
+                <h4>🖥️ Hetzner-Server (24/7)</h4>
+                <p>Hermes Agent (Worker-Profil) · OmniRoute · N8n · Docker · ab 5 €/Monat</p>
             </div>
             <div class="arch-arrow">↓</div>
             <div class="arch-row">
-                <div class="arch-mini">🧠 Hermes Agent (Port 9119)</div>
-                <div class="arch-mini">⚡ N8n (Port 5678)</div>
-                <div class="arch-mini">📓 Obsidian Vault (Git-Sync)</div>
-            </div>
-            <div class="arch-arrow">↓</div>
-            <div class="arch-box teal">
-                <h4>🔗 Composio · 500+ Apps verbunden</h4>
-                <p>Google Workspace · Notion · Slack · GitHub · Stripe · Meta Ads · TikTok · Figma · Browser · und mehr</p>
+                <div class="arch-mini">🧠 Hermes (lokal)</div>
+                <div class="arch-mini">🧠 Hermes (Server)</div>
+                <div class="arch-mini">⚡ N8n (Server)</div>
+                <div class="arch-mini">📓 Obsidian (Git-Sync)</div>
+                <div class="arch-mini">🔌 Composio (500+ Apps)</div>
             </div>
             <div class="arch-arrow">↓</div>
             <div class="arch-box teal">
@@ -327,6 +330,36 @@
     <div class="callout">
         <h3>⚡ Wie Composio funktioniert</h3>
         <p>Composio ist die Verbindungsschicht zwischen Hermes Agent und deinen Tools. Statt für jedes Tool eine eigene API-Integration zu bauen, verbindet Composio 500+ Apps über einen einzigen MCP-Server. Authentifizierung, Trigger und Aktionen – alles verwaltet. Deine Agenten sagen "Schreibe eine E-Mail an Kunde X" und Composio erledigt den Rest.</p>
+    </div>
+</section>
+
+<!-- N8N WORKFLOWS -->
+<section id="n8n">
+    <h2>Hermes baut deine N8n-Workflows</h2>
+    <p class="subtitle">Du beschreibst, was passieren soll. Hermes baut den Workflow. N8n führt ihn aus.</p>
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">📝</div>
+            <h3>Formular → CRM → E-Mail</h3>
+            <p>Lead kommt über Webformular → wird ins CRM gespeichert → Begrüßungsmail geht automatisch raus. Wie unser echter Beispiel-Workflow.</p>
+            <span class="tag">Workflow 1 · Live</span>
+        </div>
+        <div class="card">
+            <div class="icon">📊</div>
+            <h3>Tagesauswertung</h3>
+            <p>WhatsApp-Nachrichten sammeln, Produktionsdaten auswerten, Report generieren und per Telegram pushen – jeden Abend automatisch.</p>
+            <span class="tag">Workflow 2 · Live</span>
+        </div>
+        <div class="card">
+            <div class="icon">🤖</div>
+            <h3>Website-Chatbot (Mini-RAG)</h3>
+            <p>Kunden fragt auf der Website → Hermes antwortet aus deinem Obsidian-Wissen → Termin wird direkt gebucht.</p>
+            <span class="tag">Workflow 4 · Live</span>
+        </div>
+    </div>
+    <div class="callout">
+        <h3>🧠 Hermes als N8n-Workflow-Builder</h3>
+        <p>Du sagst: "Wenn ein Lead über das Formular kommt, speichere ihn im CRM und schicke eine Begrüßungsmail." Hermes baut den kompletten N8n-Workflow als JSON-Datei, die du direkt in N8n importieren kannst. Kein Drag-and-Drop, kein Klicken – du beschreibst, Hermes baut, N8n läuft. Die Workflows liegen als Open-Source-Dateien in diesem Repo.</p>
     </div>
 </section>
 

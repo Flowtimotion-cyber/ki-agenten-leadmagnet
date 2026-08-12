@@ -1,0 +1,275 @@
+{
+  "name": "Klassenbuch – Zoom-Verbindungstest",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "46019364-845e-4ef2-842b-73d6bfdb1883",
+      "name": "Test starten",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc",
+              "name": "zoomAccountId",
+              "value": "KpxaGALIThmuZwACgPEmgA",
+              "type": "string"
+            },
+            {
+              "id": "usr",
+              "name": "zoomUserId",
+              "value": "timo-merz@web.de",
+              "type": "string"
+            },
+            {
+              "id": "von",
+              "name": "von",
+              "value": "={{ $now.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "bis",
+              "name": "bis",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "78bfd760-e77c-4a00-ab48-549d2465a231",
+      "name": "Konfiguration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zoom.us/oauth/token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "account_credentials"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.zoomAccountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9ab4d4f-4c69-4157-8429-627335b99297",
+      "name": "Zoom Token holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        304
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9JpCFOYaln5ccIiH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/users/{{ $(\"Konfiguration\").item.json.zoomUserId }}/meetings",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $(\"Konfiguration\").item.json.von }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ $(\"Konfiguration\").item.json.bis }}"
+            },
+            {
+              "name": "type",
+              "value": "past"
+            },
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f010da91-9fd0-4aa6-97ed-1b0f2aed33d0",
+      "name": "Meetings der Woche holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "meetings",
+        "options": {}
+      },
+      "id": "b182710c-ccd2-4783-9929-ec38fdc3afe7",
+      "name": "Meetings einzeln",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/meetings/{{ encodeURIComponent(encodeURIComponent($json.uuid)) }}/participants",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $(\"Zoom Token holen\").item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1100
+            }
+          }
+        }
+      },
+      "id": "ae026a24-fbc1-4635-9af2-353774ace1f7",
+      "name": "Teilnehmer je Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1344,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Verbindungstest Zoom\nProbelauf: holt einen Token, listet die Meetings der letzten 7 Tage und deren Teilnehmer.\n\n**Vor dem Start:**\n1. Credential \"Zoom S2S (Client ID + Secret)\" anlegen (Basic Auth: Benutzer = Client ID, Passwort = Client Secret).\n2. In \"Konfiguration\" die Zoom-Login-E-Mail pruefen.\n\nDann manuell ausfuehren und die Ausgabe von \"Teilnehmer je Meeting\" ansehen.",
+        "height": 200,
+        "width": 1400,
+        "color": 4
+      },
+      "id": "36fff5b5-fe0e-47f2-b4bc-044348cee2d2",
+      "name": "Sticky Note 16a049c9",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        192,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Test starten": {
+      "main": [
+        [
+          {
+            "node": "Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Zoom Token holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zoom Token holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings der Woche holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings der Woche holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings einzeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings einzeln": {
+      "main": [
+        [
+          {
+            "node": "Teilnehmer je Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

@@ -1,0 +1,427 @@
+{
+  "name": "Klassenbuch – Wochenlauf (Etappe 2)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1f9bfe9e-ae6c-4e92-be34-8a350ef6981d",
+      "name": "Test starten",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        192,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc",
+              "name": "zoomAccountId",
+              "value": "KpxaGALIThmuZwACgPEmgA",
+              "type": "string"
+            },
+            {
+              "id": "usr",
+              "name": "zoomUserId",
+              "value": "timo-merz@web.de",
+              "type": "string"
+            },
+            {
+              "id": "mtg",
+              "name": "courseMeetingId",
+              "value": "85742650241",
+              "type": "string"
+            },
+            {
+              "id": "von",
+              "name": "von",
+              "value": "={{ $now.minus({ days: 7 }).toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            },
+            {
+              "id": "bis",
+              "name": "bis",
+              "value": "={{ $now.toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0fb81de7-6b8b-4f93-85d1-ae01e294bd14",
+      "name": "Konfiguration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zoom.us/oauth/token",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "account_credentials"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.zoomAccountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0f539721-7646-4912-96de-735ffe2aef36",
+      "name": "Zoom Token holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        592,
+        304
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "9JpCFOYaln5ccIiH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/users/{{ $(\"Konfiguration\").item.json.zoomUserId }}/meetings",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $(\"Konfiguration\").item.json.von }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ $(\"Konfiguration\").item.json.bis }}"
+            },
+            {
+              "name": "type",
+              "value": "past"
+            },
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ccd2c786-c202-4dc1-b2d5-8f065b8ffa7f",
+      "name": "Meetings der Woche holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        784,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "meetings",
+        "options": {}
+      },
+      "id": "c39d1035-8972-459a-8946-302bdbd64e9c",
+      "name": "Meetings einzeln",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        992,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "={{ $(\"Konfiguration\").item.json.courseMeetingId }}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "b6efc09a-2d35-4500-a61a-d96d7e6831ba",
+      "name": "Nur Kurs-Meeting",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/report/meetings/{{ encodeURIComponent(encodeURIComponent($json.uuid)) }}/participants",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page_size",
+              "value": "300"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $(\"Zoom Token holen\").item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1100
+            }
+          }
+        }
+      },
+      "id": "8e1f6bbe-cffb-465f-9d81-e7510b683199",
+      "name": "Teilnehmer je Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1392,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const NL = String.fromCharCode(10);\nconst roster = [\n  { name: 'Kristina Deininger-Knapp', soll: '9-15', aliases: ['kristina deininger-knapp','kristina knapp'] },\n  { name: 'Timo Müllerschön', soll: '9-15', aliases: ['timo müllerschön','timo muellerschön','timo müllerschoen'] },\n  { name: 'Martin Keller', soll: '9-12', aliases: ['martin keller'] },\n  { name: 'Tanja Becker', soll: '9-12', aliases: ['tanja becker'] },\n  { name: 'Sascha Weingärtner', soll: '9-12', aliases: ['sascha','sascha weingärtner','sascha weingaertner'] },\n  { name: 'Raphael Kroul', soll: '9-12', aliases: ['raphael kroul','rkroul','raphaels iphone'] },\n  { name: 'Luca-Enrico Fauth', soll: '9-12', aliases: ['luca fauth','luca-enrico fauth','luca enrico fauth'] },\n  { name: 'Sandro Röhricht', soll: '9-12', aliases: ['sandro röhricht','sandro roehricht'] },\n  { name: 'Daniel Peukert', soll: '9-12', aliases: ['daniel peukert'] },\n];\nconst ignore = ['timo merz','iphone von timo','timo-merz@web.de','meral celik'];\nconst norm = (s) => (s||'').toString().trim().toLowerCase().replace(/\\s+/g,' ');\nconst aliasMap = {};\nfor (const p of roster) for (const a of p.aliases) aliasMap[norm(a)] = p;\nconst ignoreSet = new Set(ignore.map(norm));\nconst sollWindow = { '9-12': [7,10], '9-15': [7,13] };\nfunction isoWeek(dstr){ const d=new Date(dstr+'T00:00:00Z'); const day=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-day+3); const ft=new Date(Date.UTC(d.getUTCFullYear(),0,4)); const fd=(ft.getUTCDay()+6)%7; ft.setUTCDate(ft.getUTCDate()-fd+3); return 1+Math.round((d.getTime()-ft.getTime())/(7*86400000)); }\nconst rows = [];\nfor (const item of $input.all()) { const parts=(item.json&&item.json.participants)||[]; for (const p of parts){ if(!p.join_time) continue; rows.push({ name:p.name||'', join:new Date(p.join_time), leave:p.leave_time?new Date(p.leave_time):new Date(p.join_time) }); } }\nconst berlinDate=(d)=>new Date(d.getTime()+2*3600*1000).toISOString().slice(0,10);\nconst fmtBerlin=(ms)=>new Date(ms+2*3600*1000).toISOString().slice(11,16);\nconst wochentage=['So','Mo','Di','Mi','Do','Fr','Sa'];\nconst meetingEnd={};\nfor (const r of rows){ const dt=berlinDate(r.join); const lv=r.leave.getTime(); if(!(dt in meetingEnd)||lv>meetingEnd[dt]) meetingEnd[dt]=lv; }\nconst byDate={};\nfor (const r of rows){ const nn=norm(r.name); if(ignoreSet.has(nn)) continue; const date=berlinDate(r.join); byDate[date]=byDate[date]||{persons:{},unknown:{}}; const person=aliasMap[nn]; if(person){ byDate[date].persons[person.name]=byDate[date].persons[person.name]||{person,sessions:[]}; byDate[date].persons[person.name].sessions.push([r.join,r.leave]); } else { byDate[date].unknown[r.name]=(byDate[date].unknown[r.name]||0)+1; } }\nfunction minutesIn(sessions,ws,we){ let ivs=sessions.map(([s,e])=>[Math.max(s.getTime(),ws),Math.min(e.getTime(),we)]).filter(([s,e])=>e>s); ivs.sort((a,b)=>a[0]-b[0]); let total=0,cs=null,ce=null; for(const [s,e] of ivs){ if(cs===null){cs=s;ce=e;} else if(s<=ce){ce=Math.max(ce,e);} else {total+=ce-cs;cs=s;ce=e;} } if(cs!==null) total+=ce-cs; return Math.round(total/60000); }\nfunction rawSpan(sessions){ let mn=null,mx=null; for(const [s,e] of sessions){ const st=s.getTime(),et=e.getTime(); if(mn===null||st<mn)mn=st; if(mx===null||et>mx)mx=et; } return [mn,mx]; }\nconst out=[];\nfor (const date of Object.keys(byDate).sort()){ const bucket=byDate[date]; const dayStart=new Date(date+'T00:00:00Z').getTime(); const mEnd=meetingEnd[date]; const anwesende=[]; const present=new Set();\n  for (const key in bucket.persons){ const {person,sessions}=bucket.persons[key]; present.add(key); const [wsH,weH]=sollWindow[person.soll]; const ws=dayStart+wsH*3600*1000; const we=dayStart+weH*3600*1000; const effEnd=Math.min(we,mEnd); const erreichbar=Math.max(0,Math.round((effEnd-ws)/60000)); const min=minutesIn(sessions,ws,effEnd); const cov=erreichbar>0?min/erreichbar:0; const sp=rawSpan(sessions); const status=min<=0?'⚠️ Rücksprache':(cov>=0.6?'✅ erfüllt':'⚠️ Rücksprache'); anwesende.push({ name:person.name, soll:person.soll+' Uhr', von:fmtBerlin(sp[0]), bis:fmtBerlin(sp[1]), minuten:min, erreichbar_min:erreichbar, abdeckung:Math.round(cov*100)+'%', status }); }\n  anwesende.sort((a,b)=>a.name.localeCompare(b.name));\n  const abwesende=roster.filter(p=>!present.has(p.name)).map(p=>p.name);\n  const rueck=anwesende.filter(a=>a.status.includes('Rücksprache')).map(a=>a.name);\n  const unbekannt=Object.keys(bucket.unknown);\n  const d=new Date(date+'T12:00:00Z'); const wt=wochentage[d.getUTCDay()];\n  const pp=date.split('-'); const dmy=pp[2]+'.'+pp[1]+'.'+pp[0];\n  const lines=anwesende.map(a=>a.name+' ('+a.soll+'): '+a.von+'–'+a.bis+' · '+a.minuten+' Min · '+a.abdeckung+' · '+a.status);\n  const anwesenheit_text='Meeting-Ende: '+fmtBerlin(mEnd)+NL+lines.join(NL);\n  out.push({ json: { datum:date, wochentag:wt, kurstag:wt+', '+dmy, kw:isoWeek(date), meeting_ende:fmtBerlin(mEnd), anwesend_anzahl:anwesende.length, teilnehmer_gesamt:roster.length, abwesend_text:abwesende.length?abwesende.join(', '):'—', ruecksprache_text:rueck.length?rueck.join(', '):'—', anwesenheit_text, anwesende, abwesende, ruecksprache:rueck, unbekannt } }); }\nreturn out;"
+      },
+      "id": "f65853ba-11ab-4b2c-ac56-133187c3b17c",
+      "name": "Auswertung",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "9615841b-ea00-4f88-a18e-fa965650bfe6"
+        },
+        "title": "={{ $json.kurstag }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Datum|date",
+              "date": "={{ $json.datum }}"
+            },
+            {
+              "key": "Wochentag|select",
+              "selectValue": "={{ $json.wochentag }}"
+            },
+            {
+              "key": "KW|number",
+              "numberValue": "={{ $json.kw }}"
+            },
+            {
+              "key": "Anwesend|number",
+              "numberValue": "={{ $json.anwesend_anzahl }}"
+            },
+            {
+              "key": "TN gesamt|number",
+              "numberValue": "={{ $json.teilnehmer_gesamt }}"
+            },
+            {
+              "key": "Abwesend|rich_text",
+              "textContent": "={{ $json.abwesend_text }}"
+            },
+            {
+              "key": "Rücksprache|rich_text",
+              "textContent": "={{ $json.ruecksprache_text }}"
+            },
+            {
+              "key": "Anwesenheit (Auto)|rich_text",
+              "textContent": "={{ $json.anwesenheit_text }}"
+            },
+            {
+              "key": "Status|select",
+              "selectValue": "🟡 prüfen"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ff92d28b-6963-4a85-b259-d9d2d81661c9",
+      "name": "Klassenbuch schreiben",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        304
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "Ba5ivP3bydLAPWng",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Klassenbuch – Wochenlauf (Etappe 2: Auswertung + Schreiben)\nHolt Zoom-Anwesenheit, filtert das Kurs-Meeting (85742650241), rechnet je Tag aus und LEGT pro Kurstag eine Zeile im Notion-Klassenbuch an (Status 🟡 prüfen). Roster ist hier noch fest eingebaut. Erstellt bei jedem Lauf neue Zeilen (Upsert kommt als Nächstes).",
+        "height": 200,
+        "width": 1900,
+        "color": 5
+      },
+      "id": "f6006064-e61e-4548-8cd1-0f26c3c87757",
+      "name": "Sticky Note 1edb9e7b",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        64
+      ]
+    }
+  ],
+  "connections": {
+    "Test starten": {
+      "main": [
+        [
+          {
+            "node": "Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "Zoom Token holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zoom Token holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings der Woche holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings der Woche holen": {
+      "main": [
+        [
+          {
+            "node": "Meetings einzeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meetings einzeln": {
+      "main": [
+        [
+          {
+            "node": "Nur Kurs-Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nur Kurs-Meeting": {
+      "main": [
+        [
+          {
+            "node": "Teilnehmer je Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teilnehmer je Meeting": {
+      "main": [
+        [
+          {
+            "node": "Auswertung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auswertung": {
+      "main": [
+        [
+          {
+            "node": "Klassenbuch schreiben",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "name": "WhatsApp Tagesproduktion Auswertung",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "WhatsApp Tagesproduktion auswerten",
+        "formDescription": "Kopiere die WhatsApp-Meldungen der Tagesproduktion (eine oder mehrere Personen) und füge sie unten ein.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "WhatsApp Text",
+              "fieldType": "textarea",
+              "placeholder": "z.B.\nMax: 2 NK, 1 BK, 9-12 Uhr\nAnna: 3 NK, 13-16 Uhr",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Auswerten",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Danke! Die Daten werden ausgewertet und in Google Sheets gespeichert."
+            }
+          }
+        }
+      },
+      "id": "0361dbe7-9328-4bbc-8e74-7f3775cef4cb",
+      "name": "WhatsApp Text einfügen",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "0bbbf491-8730-44e2-82a6-675a4231a9af"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json['WhatsApp Text'] }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"eintraege\": [\n    {\n      \"datum\": \"2026-08-03\",\n      \"vertriebspartner\": \"Max Mustermann\",\n      \"neukunden\": 2,\n      \"bestandskunden\": 1,\n      \"zeitslot\": \"09-12\",\n      \"rohzeile\": \"Max: 2 NK, 1 BK, 9-12 Uhr\"\n    }\n  ]\n}",
+        "options": {
+          "systemPromptTemplate": "=Du unterstützt einen Door-to-Door-Vertrieb (weeenergie) bei der Auswertung der WhatsApp-Tagesproduktion.\nVertriebspartner melden dort ihre Produktion in Kurzform, z.B. \"NEW 4\", \"UP! 2\", \"2 NK, 1 BK\" o.ä.\n\nBegriffe:\n- NEW / NK / Neukunde = Neukunde\n- UP! / UP / BK / Bestandskunde = Bestandskunde (Upgrade)\n\nErzeuge für JEDE einzelne Meldung/Zeile im eingefügten Text einen eigenen Eintrag im Array 'eintraege'. Falls der Text im WhatsApp-Exportformat vorliegt (z.B. \"27.07.26, 15:03 - Nico Weeenergie: UP! 2\"), nutze Datum, Uhrzeit und Absendername aus dieser Zeile:\n- datum: Format YYYY-MM-DD. Steht kein Datum im Text, verwende {{ $now.toFormat('yyyy-MM-dd') }}.\n- vertriebspartner: Name des Absenders/der Person.\n- neukunden: Anzahl Neukunden als Zahl, 0 falls keine Angabe.\n- bestandskunden: Anzahl Bestandskunden als Zahl, 0 falls keine Angabe.\n- zeitslot: eines von '09-12', '13-16', '17-20' oder 'unbekannt' - ordne die genannte Uhrzeit dem nächstliegenden Zeitfenster zu.\n- rohzeile: die ursprüngliche Zeile/Meldung unverändert, zur Nachvollziehbarkeit.\n\nGib ausschließlich das JSON-Objekt zurück."
+        }
+      },
+      "id": "8a498790-e409-4287-9752-21a5a6d0e059",
+      "name": "Produktionsdaten extrahieren",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "id": "086af1d5-06af-414c-a3b6-8b1cc914eb5c",
+      "name": "Claude Parsing-Modell",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        544,
+        512
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "n8n credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.eintraege",
+        "options": {}
+      },
+      "id": "351504f2-cda6-4c59-ae60-7fe7c8a10a15",
+      "name": "Einträge aufteilen",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        848,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1f9bBEXJWxIHmQp-h1DBUP6Lfb2b4Ifxz2WZR1ZjXGFQ",
+          "cachedResultName": "WhatsApp Tagesproduktion"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Untitled",
+          "cachedResultName": "Untitled"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Datum": "={{ $json.datum }}",
+            "Vertriebspartner": "={{ $json.vertriebspartner }}",
+            "Neukunden": "={{ $json.neukunden }}",
+            "Bestandskunden": "={{ $json.bestandskunden }}",
+            "Zeitslot": "={{ $json.zeitslot }}",
+            "Rohzeile": "={{ $json.rohzeile }}"
+          },
+          "schema": [
+            {
+              "id": "Datum",
+              "displayName": "Datum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Vertriebspartner",
+              "displayName": "Vertriebspartner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Neukunden",
+              "displayName": "Neukunden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Bestandskunden",
+              "displayName": "Bestandskunden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Zeitslot",
+              "displayName": "Zeitslot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Rohzeile",
+              "displayName": "Rohzeile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8107307f-ca8c-4cbd-b3bf-7bf8c56aa4e6",
+      "name": "In Google Sheets speichern",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mq51AXTxXPpCEpKs",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Setup (einmalig)\n1. Google Sheets Zieltabelle anlegen mit Kopfzeile: Datum, Vertriebspartner, Neukunden, Bestandskunden, Zeitslot, Rohzeile\n2. Im Node \"In Google Sheets speichern\": Google-Konto verbinden, dann Tabelle + Tabellenblatt auswählen\n3. Formular-URL (Production URL) des Form Trigger öffnen, WhatsApp-Text einfügen und testen\n4. Claude Sonnet 4.6 läuft über die n8n-Credits - keine eigene Anthropic-API notwendig",
+        "height": 200,
+        "width": 1200,
+        "color": 4
+      },
+      "id": "11cbae6a-e6e6-4780-a631-345bb1a0d7eb",
+      "name": "Sticky Note a9f58e78",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        16
+      ]
+    }
+  ],
+  "connections": {
+    "WhatsApp Text einfügen": {
+      "main": [
+        [
+          {
+            "node": "Produktionsdaten extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Produktionsdaten extrahieren": {
+      "main": [
+        [
+          {
+            "node": "Einträge aufteilen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Parsing-Modell": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Produktionsdaten extrahieren",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einträge aufteilen": {
+      "main": [
+        [
+          {
+            "node": "In Google Sheets speichern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true
+  }
+}
